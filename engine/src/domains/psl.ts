@@ -27,8 +27,8 @@ const HOSTING =
   'dweb.link ipfs.io w3s.link carrd.co tilda.ws jimdosite.com yolasite.com webnode.page firebaseio.com ' +
   'pythonanywhere.com vercel.sh onrender.app deno.dev ngrok.pizza github.dev codeberg.page';
 
-const SUFFIXES = new Set<string>();
-const HOSTING_SET = new Set<string>();
+const SUFFIXES = /* @__PURE__ */ new Set<string>();
+const HOSTING_SET = /* @__PURE__ */ new Set<string>();
 
 function init(): void {
   if (SUFFIXES.size > 0) return;

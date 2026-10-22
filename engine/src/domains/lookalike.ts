@@ -70,7 +70,7 @@ export interface Impersonation {
 }
 
 /** Real, unrelated domains that sit close to a brand label. */
-const NEAR_MISS_ALLOW = new Set(['kodak', 'tomato', 'canary', 'mantra', 'apply', 'appie', 'potato', 'kotaku', 'swiggly']);
+const NEAR_MISS_ALLOW = /* @__PURE__ */ new Set(['kodak', 'tomato', 'canary', 'mantra', 'apply', 'appie', 'potato', 'kotaku', 'swiggly']);
 
 function isAscii(s: string): boolean {
   // eslint-disable-next-line no-control-regex

@@ -6,6 +6,7 @@
 import type { Locale, UrlFinding } from '../types';
 import { t } from '../i18n';
 import { cleanIdentifier } from '../normalize';
+import { parseUrl, type ParsedUrl } from './parseurl';
 import { hostToAscii, hostToUnicode } from '../domains/punycode';
 import { splitHost } from '../domains/psl';
 import { isKnownGoodHost, isShortenerHost, isUserContentHost, officialBrandForHost, brandTokenInPath } from '../domains/brands';
@@ -24,88 +25,16 @@ const PUBLIC_KIND: Record<ImpersonationKind, NonNullable<UrlFinding['impersonati
 import { combine } from '../util';
 
 /** Official short-link domains of brands (still official, but flagged as short links). */
-const OFFICIAL_SHORT = new Set(['amzn.in', 'amzn.to', 'a.co', 'fkrt.it', 'fkrt.co', 'fkrt.cc', 'myntr.it', 'swig.gy', 'zoma.to', 'hdfcbk.io', 'phon.pe', 'paytm.me', 'g.co', 'goo.gl']);
+const OFFICIAL_SHORT = /* @__PURE__ */ new Set(['amzn.in', 'amzn.to', 'a.co', 'fkrt.it', 'fkrt.co', 'fkrt.cc', 'myntr.it', 'swig.gy', 'zoma.to', 'hdfcbk.io', 'phon.pe', 'paytm.me', 'g.co', 'goo.gl']);
 
-export interface ParsedUrl {
-  scheme: string;
-  userinfo: string;
-  /** Lowercase host without trailing dot (may contain Unicode). */
-  host: string;
-  port: string;
-  /** Path with leading slash, original case. */
-  path: string;
-  query: string;
-  fragment: string;
-  isIp: boolean;
-}
+export { parseUrl };
+export type { ParsedUrl };
 
-const IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/;
-const INT_IP = /^(?:0x[0-9a-f]{6,8}|\d{8,10})$/;
-
-/** Parse a URL or bare domain. Returns null when there is no usable host. */
-export function parseUrl(input: string): ParsedUrl | null {
-  let s = cleanIdentifier(input);
-  if (!s) return null;
-  s = s.replace(/^h(?:xx|\*\*)p/i, 'http');
-  let scheme = '';
-  const m = /^([a-z][a-z0-9+.-]*):/i.exec(s);
-  if (m) {
-    const sc = (m[1] as string).toLowerCase();
-    if (sc === 'data' || sc === 'javascript' || sc === 'vbscript') {
-      return { scheme: sc, userinfo: '', host: '', port: '', path: s.slice(sc.length + 1), query: '', fragment: '', isIp: false };
-    }
-    const after = s.slice(m[0].length);
-    if (after.startsWith('//') || after.startsWith('\\\\')) {
-      scheme = sc;
-      s = after.slice(2);
-    }
-  } else if (s.startsWith('//')) {
-    s = s.slice(2);
-  }
-  const end = s.search(/[/?#\\]/);
-  const authority = end < 0 ? s : s.slice(0, end);
-  let rest = end < 0 ? '' : s.slice(end).replace(/\\/g, '/');
-  const at = authority.lastIndexOf('@');
-  const userinfo = at >= 0 ? authority.slice(0, at) : '';
-  const hostport = at >= 0 ? authority.slice(at + 1) : authority;
-  let host = hostport;
-  let port = '';
-  if (hostport.startsWith('[')) {
-    const close = hostport.indexOf(']');
-    host = close > 0 ? hostport.slice(0, close + 1) : hostport;
-    const p = close > 0 ? hostport.slice(close + 1) : '';
-    if (p.startsWith(':')) port = p.slice(1);
-  } else {
-    const colon = hostport.lastIndexOf(':');
-    if (colon >= 0 && /^\d*$/.test(hostport.slice(colon + 1))) {
-      port = hostport.slice(colon + 1);
-      host = hostport.slice(0, colon);
-    }
-  }
-  host = host.toLowerCase().replace(/\.+$/, '');
-  if (!host || /[\s<>"'`]/.test(host)) return null;
-  let fragment = '';
-  const hashI = rest.indexOf('#');
-  if (hashI >= 0) {
-    fragment = rest.slice(hashI + 1);
-    rest = rest.slice(0, hashI);
-  }
-  let query = '';
-  const qI = rest.indexOf('?');
-  if (qI >= 0) {
-    query = rest.slice(qI + 1);
-    rest = rest.slice(0, qI);
-  }
-  const isIp = IPV4.test(host) || INT_IP.test(host) || host.startsWith('[');
-  if (!isIp && host.indexOf('.') < 0 && host !== 'localhost') return null;
-  return { scheme, userinfo, host, port, path: rest || '/', query, fragment, isIp };
-}
-
-const VERY_RISKY_TLDS = new Set(
-  'tk ml ga cf gq zip mov top xyz icu buzz cyou sbs cfd bond rest monster quest click link lol country kim loan win bid racing date review party trade science accountant download men stream gdn work cam su pw ws ink support help'.split(' '),
+const VERY_RISKY_TLDS = /* @__PURE__ */ new Set(
+  /* @__PURE__ */ 'tk ml ga cf gq zip mov top xyz icu buzz cyou sbs cfd bond rest monster quest click link lol country kim loan win bid racing date review party trade science accountant download men stream gdn work cam su pw ws ink support help'.split(' '),
 );
-const MILD_RISKY_TLDS = new Set(
-  'online site website live life shop store club vip fun space tech today world info biz cc ru cn asia mobi best digital network services center email group social one plus run games bet cash money finance loans credit gift gifts lat rocks host press xin top10 fit uno'.split(' '),
+const MILD_RISKY_TLDS = /* @__PURE__ */ new Set(
+  /* @__PURE__ */ 'online site website live life shop store club vip fun space tech today world info biz cc ru cn asia mobi best digital network services center email group social one plus run games bet cash money finance loans credit gift gifts lat rocks host press xin top10 fit uno'.split(' '),
 );
 
 const HOST_WORDS = [
@@ -113,7 +42,7 @@ const HOST_WORDS = [
   'refund', 'bonus', 'claim', 'prize', 'lottery', 'cashback', 'helpdesk', 'redeem', 'challan', 'kbc', 'winner',
   'lucky', 'otp', 'update', 'customercare', 'support', 'wallet', 'giftcard', 'freegift', 'subsidy', 'yojana',
 ];
-const SHORT_HOST_WORDS = new Set(['kyc', 'otp', 'kbc']);
+const SHORT_HOST_WORDS = /* @__PURE__ */ new Set(['kyc', 'otp', 'kbc']);
 
 function hostWords(body: string): string[] {
   const found: string[] = [];
@@ -295,17 +224,14 @@ export function analyzeUrl(url: string, locale: Locale = 'en'): UrlFinding {
 // Extraction
 
 /** TLDs accepted for bare domains (no scheme). Two-letter codes that are common English words are left out. */
-const BARE_TLDS = (
+const BARE_TLDS =
   'com net org in co io info biz xyz top online site website live life shop store club vip icu buzz click link tk ml ' +
   'ga cf gq pw cc ws su ru cn ly app dev page cloud tech space fun ink work today news blog pro asia sbs cfd cyou ' +
   'bond rest monster quest lol mobi tv uk ae pk bd np lk sg vn kh ke ng gov edu bank sbi network center services ' +
   'support help care delivery express finance money loan loans credit cash win bid date review party trade science ' +
   'download stream men gdn mom uno fit zip mov digital email group solutions systems company agency media social team ' +
   'zone one plus run gold bet games game cam rocks shopping deals sale gift gifts global ltd llc kim country racing ' +
-  'accountant host press wiki best lat guru red blue pink black me'
-)
-  .split(' ')
-  .sort((a, b) => b.length - a.length);
+  'accountant host press wiki best lat guru red blue pink black me';
 
 let BARE_RE: RegExp | null = null;
 const SCHEME_RE = /(?:(?:https?|hxxps?|ftp):\/\/|www\d{0,3}\.)[^\s<>"'`]+/g;
@@ -316,7 +242,7 @@ function bareRe(): RegExp {
   if (!BARE_RE) {
     const L = 'a-z0-9\\u00a1-\\u0963\\u0966-\\uffff';
     BARE_RE = new RegExp(
-      `(?:[${L}](?:[${L}-]{0,61}[${L}])?\\.)+(?:${BARE_TLDS.join('|')}|भारत)(?![${L}-])(?::\\d{2,5})?(?:[/?#][^\\s<>"'\`]*)?`,
+      `(?:[${L}](?:[${L}-]{0,61}[${L}])?\\.)+(?:${BARE_TLDS.split(' ').sort((a, b) => b.length - a.length).join('|')}|भारत)(?![${L}-])(?::\\d{2,5})?(?:[/?#][^\\s<>"'\`]*)?`,
       'g',
     );
   }

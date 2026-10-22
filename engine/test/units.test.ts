@@ -18,6 +18,7 @@ import {
   sha256HexSync,
 } from '../src/index';
 import { upiHandleCount } from '../src/entities/upi';
+import * as categoriesEntry from '../src/categories';
 import { getBrands } from '../src/domains/brands';
 import { allCueSources, getRuleSet } from '../src/rules';
 
@@ -154,6 +155,31 @@ describe('hashing', () => {
     const h = await identifierHash('upi', 'Rahul@okhdfcbank');
     expect(h).toBe(sha256HexSync('upi:rahul@okhdfcbank'));
     expect(h).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('computes the SHA-256 round constants correctly (multi-block vectors)', () => {
+    expect(sha256HexSync('')).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+    expect(sha256HexSync('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq')).toBe(
+      '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1',
+    );
+    expect(sha256HexSync('a'.repeat(1000))).toBe('41edece42d63e8d9bf515a9ba6932e1c20cbc9f5a5d134645adb5db1b9737ea3');
+  });
+  it('normalizes phone and upi:// identifiers without the analysers', () => {
+    expect(normalizeIdentifier('phone', '0044 20 7946 0958')).toBe('442079460958');
+    expect(normalizeIdentifier('phone', '1930')).toBe('1930');
+    expect(normalizeIdentifier('phone', '112')).toBe('112');
+    expect(normalizeIdentifier('upi', 'upi://pay?am=5&pa=Refund.Desk%40AXL')).toBe('refund.desk@axl');
+    expect(normalizeIdentifier('upi', 'upi://pay?am=5')).toBe('upi://pay?am=5');
+  });
+});
+
+describe('package entries', () => {
+  it('serves the encyclopedia from @ruko/engine/categories and the main entry alike', () => {
+    expect(categoriesEntry.CATEGORIES).toBe(CATEGORIES);
+    expect(categoriesEntry.CATEGORY_IDS).toEqual(CATEGORY_IDS);
+    const kyc = categoriesEntry.getCategory('kyc_update');
+    expect(kyc.short.length).toBeGreaterThan(20);
+    expect(kyc.shortHi).toMatch(/[ऀ-ॿ]/);
   });
 });
 

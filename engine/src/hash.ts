@@ -1,12 +1,15 @@
 /**
  * Identifier normalisation and hashing for privacy-preserving community
  * lookups (k-anonymity: clients send only the first 5 hex characters).
+ *
+ * Depends only on the small parsers (no rules, brand data or i18n), so
+ * importing identifierHash alone stays a few KB.
  */
 import type { IdentifierKind } from './types';
 import { cleanIdentifier } from './normalize';
-import { parseUrl } from './entities/urls';
-import { parseUpiUri } from './entities/upi';
-import { analyzePhone } from './entities/phones';
+import { parseUrl } from './entities/parseurl';
+import { parseUpiParams } from './entities/upiparse';
+import { classify } from './entities/phoneparse';
 import { hostToAscii } from './domains/punycode';
 import { splitHost } from './domains/psl';
 import { sha256Hex } from './sha256';
@@ -28,15 +31,14 @@ export function normalizeIdentifier(kind: IdentifierKind, value: string): string
   switch (kind) {
     case 'upi': {
       if (/^[a-z]+:\/\//i.test(v)) {
-        const req = parseUpiUri(v);
-        if (req && req.payee) return req.payee.toLowerCase();
+        const payee = (parseUpiParams(v)?.params.get('pa') ?? '').toLowerCase();
+        if (payee) return payee;
       }
       return v.toLowerCase().replace(/\s+/g, '');
     }
     case 'phone': {
-      const p = analyzePhone(v);
-      const digits = (p.kind && p.kind !== 'unknown' ? p.e164 : v).replace(/\D/g, '');
-      return digits;
+      const c = classify(v);
+      return (c && c.kind !== 'unknown' ? c.e164 : v).replace(/\D/g, '');
     }
     case 'url': {
       const p = parseUrl(v);

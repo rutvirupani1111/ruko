@@ -8,6 +8,7 @@
 import type { Locale, UpiFinding, UpiPaymentRequest } from '../types';
 import { t } from '../i18n';
 import { cleanIdentifier } from '../normalize';
+import { parseUpiParams } from './upiparse';
 import { brandTokenInHost } from '../domains/brands';
 import { combine } from '../util';
 
@@ -65,7 +66,7 @@ const RISKY_LOCAL_WORDS = [
   'customs', 'court', 'incometax', 'itdept', 'sebi', 'trai', 'verify', 'verification', 'official', 'security',
   'unblock', 'cybercell', 'cybercrime', 'crime', 'penalty', 'challan', 'fine', 'tax', 'ed',
 ];
-const EXACT_ONLY = new Set(['ed', 'fine', 'tax', 'gov', 'help', 'care', 'kyc', 'rbi', 'cbi']);
+const EXACT_ONLY = /* @__PURE__ */ new Set(['ed', 'fine', 'tax', 'gov', 'help', 'care', 'kyc', 'rbi', 'cbi']);
 
 function riskyWord(local: string): string | null {
   const parts = local.split(/[._\-\d]+/).filter(Boolean);
@@ -126,28 +127,12 @@ const RECEIVE_WORDS =
   /(receiv|refund|cash ?back|prize|lottery|reward|\bwon\b|winning|winner|claim|bonus|credit|return|kyc|verif|unblock|gift|lucky|get money|प्राप्त|रिफंड|इनाम|कैशबैक|वापस|जीत|paise milenge|paisa milega)/i;
 const AUTHORITY_NAMES = /(police|cbi|\brbi\b|reserve bank|income ?tax|govt|government|customs|court|npci|sebi|trai|cyber ?cell|crime branch|पुलिस|सरकार)/i;
 
-function decodePart(s: string): string {
-  try {
-    return decodeURIComponent(s.replace(/\+/g, ' '));
-  } catch {
-    return s;
-  }
-}
 
 /** Parse `upi://pay?pa=..&pn=..&am=..&tn=..&cu=..` (and app variants such as `tez://upi/pay`). */
 export function parseUpiUri(uri: string, locale: Locale = 'en'): UpiPaymentRequest | null {
-  const s = cleanIdentifier(uri);
-  const m = /^(upi|tez|gpay|phonepe|paytmmp|paytm|bhim|credpay):\/\/([^?#]*)\??([^#]*)/i.exec(s);
-  if (!m) return null;
-  const action = (m[2] as string).toLowerCase();
-  const params = new Map<string, string>();
-  for (const pair of (m[3] as string).split('&')) {
-    if (!pair) continue;
-    const eq = pair.indexOf('=');
-    const k = (eq < 0 ? pair : pair.slice(0, eq)).toLowerCase();
-    const val = eq < 0 ? '' : decodePart(pair.slice(eq + 1));
-    if (!params.has(k)) params.set(k, val.trim());
-  }
+  const parsed = parseUpiParams(cleanIdentifier(uri));
+  if (!parsed) return null;
+  const { action, params } = parsed;
   const payee = (params.get('pa') ?? '').toLowerCase();
   const req: UpiPaymentRequest = { payee, risk: 0, reasons: [t(locale, 'upi.pay_only')] };
   const risks: number[] = [25];

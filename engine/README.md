@@ -18,7 +18,8 @@ Web Workers and MV3 service workers. Everything is analysed locally: nothing lea
 - Amounts: ₹ 5,000 / Rs. 5000 / INR 5000 / 5k / 5 lakh / 2 crore / 5,00,000 / 25 लाख.
 - Verdicts in English or Hindi with headline, summary, signals (with spans into your text),
   entities with mini-verdicts, and advice (1930, cybercrime.gov.in, your bank, Chakshu).
-- `CATEGORIES`: an encyclopedia (how it works, red flags, what to do) in English and Hindi.
+- `CATEGORIES`: an encyclopedia (how it works, red flags, what to do) in English and Hindi,
+  also available on its own from `@ruko/engine/categories`.
 - Privacy-preserving identifiers: `normalizeIdentifier` + `identifierHash` (SHA-256) for
   k-anonymity range lookups.
 
@@ -63,6 +64,32 @@ const { prefix, suffix } = hashPrefix(hash);                  // GET /api/v1/ran
 
 `sha256HexSync` (pure JS) is exported for proof-of-work loops where WebCrypto call overhead dominates.
 
+The scam encyclopedia has its own entry, so pages that only analyse do not ship it:
+
+```ts
+import { CATEGORIES, CATEGORY_IDS, getCategory } from '@ruko/engine/categories';
+```
+
+The same three exports stay on the main entry for compatibility. Apps that alias
+`@ruko/engine` to `../engine/src/index.ts` (Vite, WXT) need one more alias, listed before the
+main one: `'@ruko/engine/categories': '../engine/src/categories.ts'`.
+
+## Bundle size
+
+The package is `sideEffects: false` and nothing runs at import time, so bundlers keep only what
+you import. Measured with `npm run size` (esbuild, minified, gzip level 9):
+
+| Import | min+gzip |
+| --- | --- |
+| `identifierHash` only | 4.8 KB |
+| `analyzeUrl` only | 22.8 KB |
+| `analyze` only | 80.4 KB |
+| `@ruko/engine/categories` | 21.0 KB |
+| everything (`export *`) | 100.3 KB |
+
+Budgets: `identifierHash` <= 5 KB (met), `analyze` <= 70 KB (not met yet: rule patterns,
+rule texts in two languages and the i18n tables are about two thirds of it; see docs/STATUS.md).
+
 ## Public API
 
 `analyze`, `detectInputKind`, `severityFor`, `extractEntities`, `analyzeUrl`, `parseUrl`,
@@ -70,26 +97,26 @@ const { prefix, suffix } = hashPrefix(hash);                  // GET /api/v1/ran
 `identifierHash`, `hashPrefix`, `sha256Hex`, `sha256HexSync`, `CATEGORIES`, `CATEGORY_IDS`,
 `getCategory`, `registrableDomain`, `isOfficialHost`, `officialDomainsFor`, `detectLanguage`,
 `HELPLINE_1930`, `CYBERCRIME_PORTAL`, `CHAKSHU_PORTAL`, `ENGINE_VERSION`, and every type in
-`src/types.ts`.
+`src/types.ts`. Subpath `@ruko/engine/categories`: `CATEGORIES`, `CATEGORY_IDS`, `getCategory`.
 
 ## Scripts
 
 | Command | What it does |
 | --- | --- |
-| `npm run build` | tsup: `dist/index.js` (ESM), `dist/index.cjs`, `.d.ts` |
+| `npm run build` | tsup: `dist/index.*` and `dist/categories.*` (ESM + CJS + `.d.ts`, shared chunk) |
 | `npm test` | vitest: labelled corpus thresholds + unit tests |
 | `npm run typecheck` | strict `tsc --noEmit` (consumer-compatible settings) |
 | `npm run bench` | 1,000 analyses, must take < 1 s |
-| `npm run size` | min+gzip size report (`--modules` for per-file bytes) |
+| `npm run size` | min+gzip size per import, checks the budgets (`--modules` for per-file bytes) |
 | `node scripts/try.mjs "text" [--hi]` | print a verdict from the built bundle |
 
-## Results (v0.1.0)
+## Results (v0.1.1)
 
 - Corpus: 188 scams, 126 genuine messages (English, Hindi, Hinglish).
   Recall 96.8% at score >= 60 (required >= 95%); false positives 0.0% at score >= 35 (allowed <= 4%);
   correct top category for 90.7% of caught scams.
 - Speed: about 300 µs per analysis in Node (1,000 analyses in about 0.3 s).
-- Size: about 101 KB min+gzip for the whole bundle, **over the 60 KB target** (see docs/STATUS.md).
+- Size: see "Bundle size" above (`analyze` alone 80.4 KB, `identifierHash` alone 4.8 KB).
 
 ## License
 

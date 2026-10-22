@@ -23,7 +23,7 @@ export function severityFor(score: number): Severity {
   return 'safe';
 }
 
-const DELIVERY = new Set<ScamCategory>(['phishing_link', 'lookalike_domain', 'malicious_app', 'other']);
+const DELIVERY = /* @__PURE__ */ new Set<ScamCategory>(['phishing_link', 'lookalike_domain', 'malicious_app', 'other']);
 
 export interface Scored {
   score: number;

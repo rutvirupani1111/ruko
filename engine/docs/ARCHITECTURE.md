@@ -40,8 +40,22 @@ tokens in other domains and brand names in paths. `domains/punycode.ts` is a sma
 
 ## Files
 
-- `analyze.ts` orchestration; `score.ts`; `advice.ts`; `categories.ts` (encyclopedia);
-  `hash.ts` + `sha256.ts`; `sender.ts` (DLT header / phone / email sender parsing);
-  `lang.ts` (en / hi / hinglish); `i18n/en.ts`, `i18n/hi.ts`.
+- `analyze.ts` orchestration; `score.ts`; `advice.ts`; `categories.ts` (encyclopedia, also the
+  `@ruko/engine/categories` entry); `shorts.ts` (one-line category descriptions shared by the
+  summaries and the encyclopedia); `hash.ts` + `sha256.ts`; `sender.ts` (DLT header / phone /
+  email sender parsing); `lang.ts` (en / hi / hinglish); `i18n/en.ts`, `i18n/hi.ts`.
+- Leaf parsers with no i18n, brand or rule imports, so `identifierHash` stays small:
+  `entities/parseurl.ts`, `entities/phoneparse.ts`, `entities/upiparse.ts`.
+
+## Tree-shaking rules
+
+The package is `sideEffects: false`, and no module does work at import time:
+
+- Rule modules are factory functions (`export function kycUpdate(): RuleModule`); `rules/index.ts`
+  calls them once inside `getRuleSet()`. `r` is a plain function wrapper around `String.raw`.
+- Top-level `new Set(...)`, `new Uint32Array(...)` and `.split()`/`.map()` initializers carry
+  `/* @__PURE__ */`; regexes built from strings (amounts, bare-domain links) and lookup maps
+  (brands, UPI handles, country codes, SHA-256 round constants) are built lazily on first use.
+- Keep it that way: a single top-level call in any module makes every bundler keep that module.
 - Tests: `test/corpus/` (labelled scams and genuine messages), `test/corpus.test.ts`
   (thresholds + confusion summary), `test/units.test.ts`.

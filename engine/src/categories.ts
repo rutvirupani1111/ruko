@@ -3,8 +3,7 @@
  * works, its red flags and what to do, in English and Hindi.
  */
 import type { CategoryInfo, ScamCategory, Severity } from './types';
-import { en } from './i18n/en';
-import { hi } from './i18n/hi';
+import { SHORT } from './shorts';
 
 type Row = {
   id: ScamCategory;
@@ -580,13 +579,13 @@ const ROWS: Row[] = [
 function build(): Record<ScamCategory, CategoryInfo> {
   const out = {} as Record<ScamCategory, CategoryInfo>;
   for (const row of ROWS) {
-    const shortKey = `short.${row.id}` as keyof typeof en;
+    const short = SHORT[row.id];
     out[row.id] = {
       id: row.id,
       name: row.name[0],
       nameHi: row.name[1],
-      short: en[shortKey],
-      shortHi: hi[shortKey],
+      short: short[0],
+      shortHi: short[1],
       howItWorks: row.how.map((p) => p[0]),
       howItWorksHi: row.how.map((p) => p[1]),
       redFlags: row.flags.map((p) => p[0]),
@@ -603,7 +602,7 @@ function build(): Record<ScamCategory, CategoryInfo> {
 export const CATEGORIES: Record<ScamCategory, CategoryInfo> = /* @__PURE__ */ build();
 
 /** Category ids in display order. */
-export const CATEGORY_IDS: ScamCategory[] = ROWS.map((r) => r.id);
+export const CATEGORY_IDS: ScamCategory[] = /* @__PURE__ */ ROWS.map((r) => r.id);
 
 /** Look up one category. */
 export function getCategory(id: ScamCategory): CategoryInfo {
