@@ -1,0 +1,12 @@
+node_modules
+dist
+dev-dist
+.data
+coverage
+test-results
+playwright-report
+blob-report
+public/ocr
+*.local
+.vercel
+.DS_Store

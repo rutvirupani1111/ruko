@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Ruko Shield: Scam and Fake Link Checker",
+    "description": "Extension name shown in the browser and the stores. Max 75 characters."
+  },
+  "extShortName": {
+    "message": "Ruko Shield",
+    "description": "Short name, max 12 characters."
+  },
+  "extDescription": {
+    "message": "Pause. Check. Then trust. On-device warnings for scam messages, fake bank websites, risky links and UPI payment links.",
+    "description": "Store and browser description. Max 132 characters."
+  },
+  "actionTitle": {
+    "message": "Ruko Shield",
+    "description": "Toolbar button tooltip."
+  }
+}

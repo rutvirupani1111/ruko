@@ -1,0 +1,20 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "allowImportingTsExtensions": true,
+    "types": ["vite/client"]
+  },
+  "include": [
+    ".wxt/wxt.d.ts",
+    "src/**/*",
+    "tests/**/*",
+    "scripts/**/*.ts",
+    "wxt.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
+}

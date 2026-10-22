@@ -1,0 +1,494 @@
+@import './fonts.css';
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/* Brand constants never change; semantic tokens swap for dark mode.   */
+/* Text-on-surface tokens are tuned for WCAG 2.2 AA (4.5:1 or better). */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --font-display: 'Bricolage Grotesque Variable', 'Mukta', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Mukta', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-deva: 'Mukta', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0b1020;
+  --color-paper: #fbf8f2;
+  --color-saffron: #ff7a1a;
+  --color-indigo: #4f46e5;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-field: var(--field);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-brand: var(--brand);
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-tint: var(--brand-tint);
+  --color-on-brand: var(--on-brand);
+
+  --color-accent: var(--accent);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-tint: var(--accent-tint);
+  --color-on-accent: var(--on-accent);
+
+  --color-safe: var(--safe);
+  --color-safe-bg: var(--safe-bg);
+  --color-safe-tint: var(--safe-tint);
+  --color-caution: var(--caution);
+  --color-caution-bg: var(--caution-bg);
+  --color-caution-tint: var(--caution-tint);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-tint: var(--danger-tint);
+  --color-critical: var(--critical);
+  --color-critical-bg: var(--critical-bg);
+  --color-critical-tint: var(--critical-tint);
+  --color-on-critical: var(--on-critical);
+
+  --radius-card: 1.25rem;
+  --shadow-card: var(--shadow-card-v);
+  --shadow-lift: var(--shadow-lift-v);
+  --ease-snappy: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root {
+  color-scheme: light;
+  --bg: #fbf8f2;
+  --surface: #ffffff;
+  --surface-2: #f5efe4;
+  --field: #ffffff;
+  --fg: #0b1020;
+  --muted: #464c63;
+  --subtle: #5f6479;
+  --line: #e5ddcf;
+  --line-strong: #c9bfad;
+
+  --brand: #b93d06;
+  --brand-bg: #ff7a1a;
+  --brand-tint: #ffeedf;
+  --on-brand: #0b1020;
+
+  --accent: #4338ca;
+  --accent-bg: #4f46e5;
+  --accent-tint: #eceeff;
+  --on-accent: #ffffff;
+
+  --safe: #046c4e;
+  --safe-bg: #10b981;
+  --safe-tint: #e1f5ec;
+  --caution: #92400e;
+  --caution-bg: #f59e0b;
+  --caution-tint: #fdf0d5;
+  --danger: #be123c;
+  --danger-bg: #e11d48;
+  --danger-tint: #fde7eb;
+  --critical: #9f1239;
+  --critical-bg: #9f1239;
+  --critical-tint: #f9dfe5;
+  --on-critical: #ffffff;
+
+  --focus: #4f46e5;
+  --hl-brand: 255 122 26;
+  --hl-danger: 244 63 94;
+  --hl-caution: 245 158 11;
+  --hl-safe: 16 185 129;
+  --hl-strength: 1;
+
+  --shadow-card-v: 0 1px 0 rgb(11 16 32 / 0.04), 0 8px 24px -12px rgb(11 16 32 / 0.18);
+  --shadow-lift-v: 0 1px 0 rgb(11 16 32 / 0.05), 0 18px 40px -18px rgb(11 16 32 / 0.35);
+  --grain-opacity: 0.35;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --surface: #121a31;
+  --surface-2: #18213d;
+  --field: #0e1529;
+  --fg: #f4f1ea;
+  --muted: #bcc1d3;
+  --subtle: #9298ae;
+  --line: #242d4b;
+  --line-strong: #3a4470;
+
+  --brand: #ff8a3d;
+  --brand-bg: #ff7a1a;
+  --brand-tint: #2f1d12;
+  --on-brand: #0b1020;
+
+  --accent: #aab6ff;
+  --accent-bg: #4f46e5;
+  --accent-tint: #1d2252;
+  --on-accent: #ffffff;
+
+  --safe: #3ddba3;
+  --safe-bg: #10b981;
+  --safe-tint: #0d2a27;
+  --caution: #fbc046;
+  --caution-bg: #f59e0b;
+  --caution-tint: #2e2411;
+  --danger: #ff8197;
+  --danger-bg: #e11d48;
+  --danger-tint: #3a1424;
+  --critical: #ffb1bd;
+  --critical-bg: #be123c;
+  --critical-tint: #3d1020;
+  --on-critical: #ffffff;
+
+  --focus: #aab6ff;
+  --hl-strength: 0.62;
+
+  --shadow-card-v: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 10px 30px -14px rgb(0 0 0 / 0.7);
+  --shadow-lift-v: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 22px 50px -20px rgb(0 0 0 / 0.85);
+  --grain-opacity: 0.18;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+  }
+
+  /* Paper grain: a tiny tiled noise texture, rendered once. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  html:lang(hi) body {
+    font-family: var(--font-deva);
+  }
+
+  ::selection {
+    background: rgb(var(--hl-brand) / 0.35);
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  button,
+  [role='button'],
+  summary,
+  label[for],
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  dialog {
+    color: inherit;
+  }
+
+  dialog::backdrop {
+    background: rgb(11 16 32 / 0.55);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  /* Display headlines: Bricolage with tight leading; Hindi needs room for matras. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    font-variation-settings: 'wdth' 100;
+  }
+  :lang(hi) .display,
+  .display:lang(hi) {
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.28;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Signature: the highlighter-pen sweep over red-flag phrases. */
+  .hl {
+    --hl: var(--hl-brand);
+    color: inherit;
+    background-color: transparent;
+    background-image:
+      linear-gradient(
+        102deg,
+        rgb(var(--hl) / 0) 0.6%,
+        rgb(var(--hl) / calc(0.62 * var(--hl-strength))) 2.2%,
+        rgb(var(--hl) / calc(0.44 * var(--hl-strength))) 6%,
+        rgb(var(--hl) / calc(0.36 * var(--hl-strength))) 90%,
+        rgb(var(--hl) / calc(0.6 * var(--hl-strength))) 96%,
+        rgb(var(--hl) / 0) 99%
+      ),
+      linear-gradient(183deg, rgb(var(--hl) / 0) 0%, rgb(var(--hl) / calc(0.22 * var(--hl-strength))) 9%, rgb(var(--hl) / 0) 16%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 0.06em 0.22em;
+    margin: 0 -0.12em;
+    border-radius: 0.7em 0.25em 0.6em 0.3em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    text-decoration: none;
+    animation: hl-sweep 280ms var(--ease-snappy) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+  }
+  .hl-danger {
+    --hl: var(--hl-danger);
+  }
+  .hl-caution {
+    --hl: var(--hl-caution);
+  }
+  .hl-safe {
+    --hl: var(--hl-safe);
+  }
+  a.hl:hover,
+  a.hl:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .mark-bar {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bar-in 300ms var(--ease-snappy) both;
+  }
+  .mark-bar-2 {
+    animation-delay: 90ms;
+  }
+
+  .flash {
+    animation: flash 1100ms ease-out;
+  }
+
+  .qr-line {
+    animation: qr-scan 1.6s ease-in-out infinite alternate;
+  }
+
+  /* Indeterminate progress (route changes, OCR warm-up). */
+  .progress-indeterminate {
+    background-image: linear-gradient(90deg, transparent 0%, var(--brand-bg) 40%, var(--brand-bg) 60%, transparent 100%);
+    background-size: 40% 100%;
+    background-repeat: no-repeat;
+    animation: indeterminate 1.1s ease-in-out infinite;
+  }
+
+  .boot {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+  }
+  .boot svg {
+    animation: boot 1.1s ease-in-out infinite alternate;
+  }
+
+  .enter {
+    animation: enter 260ms var(--ease-snappy) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@keyframes hl-sweep {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes qr-scan {
+  from {
+    top: 6%;
+  }
+  to {
+    top: 94%;
+  }
+}
+
+@keyframes indeterminate {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+
+@keyframes flash {
+  0%,
+  72% {
+    box-shadow: 0 0 0 3px var(--focus);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+@keyframes bar-in {
+  from {
+    transform: scaleY(0.15);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes boot {
+  from {
+    transform: scale(0.94);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--hl-danger) / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(var(--hl-danger) / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body::before,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .print-plain {
+    box-shadow: none !important;
+    border: 0 !important;
+    background: #fff !important;
+  }
+  /* Help page: print only the complaint draft. */
+  body.print-complaint * {
+    visibility: hidden !important;
+  }
+  body.print-complaint #complaint-print,
+  body.print-complaint #complaint-print * {
+    visibility: visible !important;
+  }
+  body.print-complaint #complaint-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ruko: Pause. Check. Then trust.</title>
+    <meta
+      name="description"
+      content="Free, private scam checker for India. Paste a message, link, UPI ID or phone number and Ruko checks it on your own phone. Nothing you paste leaves your device."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#FBF8F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1020" media="(prefers-color-scheme: dark)" />
+    <meta name="application-name" content="Ruko" />
+    <meta name="apple-mobile-web-app-title" content="Ruko" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ruko" />
+    <meta property="og:title" content="Ruko: Pause. Check. Then trust." />
+    <meta
+      property="og:description"
+      content="India's on-device scam shield. Check messages, links, UPI IDs and numbers privately. रुको। जाँचो। फिर भरोसा करो।"
+    />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:image" content="%SITE_URL%/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ruko shield logo with the words Pause. Check. Then trust." />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:locale:alternate" content="hi_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ruko: Pause. Check. Then trust." />
+    <meta name="twitter:description" content="India's on-device scam shield. Nothing you paste leaves your phone." />
+    <meta name="twitter:image" content="%SITE_URL%/og.png" />
+    <link rel="canonical" href="%SITE_URL%/" />
+
+    <script>
+      // Apply the saved language and theme before first paint (no flash).
+      (function () {
+        try {
+          var d = document.documentElement;
+          var l = localStorage.getItem('ruko.locale');
+          if (l !== 'en' && l !== 'hi') l = (navigator.language || '').toLowerCase().indexOf('hi') === 0 ? 'hi' : 'en';
+          d.lang = l;
+          var t = localStorage.getItem('ruko.theme');
+          var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) d.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="56" height="56">
+          <path fill="#FF7A1A" d="M32 4.5c-7 4.1-14.8 6.4-22.9 6.9A2.6 2.6 0 0 0 6.7 14v15.9c0 15.4 10.1 27.7 24.6 32a2.4 2.4 0 0 0 1.4 0c14.5-4.3 24.6-16.6 24.6-32V14a2.6 2.6 0 0 0-2.4-2.6C46.8 10.9 39 8.6 32 4.5Z" />
+          <rect x="22.5" y="21" width="7" height="23" rx="3.5" fill="#0B1020" />
+          <rect x="34.5" y="21" width="7" height="23" rx="3.5" fill="#0B1020" />
+        </svg>
+      </div>
+    </div>
+    <noscript>
+      <p style="font: 16px/1.5 system-ui, sans-serif; padding: 24px; max-width: 40rem; margin: 0 auto">
+        Ruko needs JavaScript to check messages on your device. If you have lost money to a scam, call
+        <a href="tel:1930">1930</a> (National Cyber Crime Helpline) right away or report at
+        <a href="https://cybercrime.gov.in">cybercrime.gov.in</a>.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

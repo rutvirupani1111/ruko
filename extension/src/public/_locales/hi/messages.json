@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Ruko Shield: धोखा और नकली लिंक की जाँच",
+    "description": "Extension name shown in the browser and the stores. Max 75 characters."
+  },
+  "extShortName": {
+    "message": "Ruko Shield",
+    "description": "Short name, max 12 characters."
+  },
+  "extDescription": {
+    "message": "रुको। जाँचो। फिर भरोसा करो। धोखे वाले मैसेज, नकली बैंक वेबसाइट, ख़तरनाक लिंक और UPI भुगतान लिंक पर आपके डिवाइस पर ही चेतावनी।",
+    "description": "Store and browser description. Max 132 characters."
+  },
+  "actionTitle": {
+    "message": "Ruko Shield",
+    "description": "Toolbar button tooltip."
+  }
+}

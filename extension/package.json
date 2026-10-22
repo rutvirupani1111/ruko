@@ -1,0 +1,51 @@
+{
+  "name": "ruko-shield",
+  "description": "Ruko Shield: on-device scam warnings for WhatsApp Web, Gmail and every website. Pause. Check. Then trust.",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "npm run build:chrome && npm run build:edge && npm run build:firefox",
+    "build:chrome": "wxt build -b chrome",
+    "build:edge": "wxt build -b edge",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "npm run zip:chrome && npm run zip:edge && npm run zip:firefox",
+    "zip:chrome": "wxt zip -b chrome",
+    "zip:edge": "wxt zip -b edge",
+    "zip:firefox": "wxt zip -b firefox",
+    "typecheck": "wxt prepare && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "wxt build -b chrome && playwright test",
+    "icons": "node scripts/gen-icons.mjs",
+    "screenshots": "wxt build -b chrome && node scripts/store-screenshots.mjs",
+    "verify": "npm run typecheck && npm run test && npm run build && npm run zip && playwright test",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource/mukta": "5.3.0",
+    "lucide": "1.61.0",
+    "lucide-react": "1.61.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@wxt-dev/module-react": "1.2.2",
+    "happy-dom": "21.0.4",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5",
+    "wxt": "0.21.4"
+  }
+}
