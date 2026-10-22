@@ -1,4 +1,4 @@
-import type { Entities, IdentifierKind, ScamCategory } from '@ruko/engine';
+import type { Entities, IdentifierKind, ScamCategory, UrlFinding } from '@ruko/engine';
 import { config } from '@/config';
 import { loadEngine } from './engine';
 import { PREF, readPref, writePref } from './storage';
@@ -78,6 +78,39 @@ export function communityKey(kind: IdentifierKind, value: string): string {
   return `${kind}:${value.toLowerCase()}`;
 }
 
+/**
+ * Big platforms where anyone can host a page (forms, sites, channels, files).
+ * A scam page there must be reported as that exact link, never as the whole
+ * domain: one fake Google Form must not flag google.com for everybody.
+ * (Free-hosting suffixes such as web.app or github.io are already split per
+ * site by the public suffix list, so their registrable domain is safe.)
+ */
+const PLATFORM_DOMAINS = new Set([
+  'google.com', 'forms.gle', 'youtube.com', 'youtu.be', 'blogger.com', 'g.page',
+  'github.com', 'gitlab.com', 'bitbucket.org',
+  't.me', 'telegram.me', 'telegram.org', 'wa.me', 'whatsapp.com',
+  'facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'x.com', 'twitter.com', 'linkedin.com', 'threads.net',
+  'reddit.com', 'pinterest.com', 'quora.com', 'medium.com', 'tumblr.com', 'discord.com', 'discord.gg', 'snapchat.com', 'sharechat.com',
+  'microsoft.com', 'office.com', 'live.com', 'sharepoint.com', 'onedrive.com', '1drv.ms', 'apple.com', 'icloud.com',
+  'dropbox.com', 'box.com', 'mediafire.com', 'wetransfer.com', 'mega.nz',
+  'notion.so', 'notion.site', 'canva.com', 'canva.site', 'typeform.com', 'jotform.com', 'zoho.com', 'wordpress.com', 'wix.com', 'weebly.com',
+  'linktr.ee', 'zoom.us', 'yahoo.com', 'bing.com', 'amazonaws.com', 'cloudfront.net', 'azurewebsites.net', 'herokuapp.com',
+]);
+
+const IP_HOST = /^(?:\d{1,3}(?:\.\d{1,3}){3}|\[[0-9a-f:.]+\])$/i;
+
+/**
+ * How a link is reported and looked up: the whole site when the domain itself
+ * is the scam, the exact link for shorteners, IP addresses and pages on big
+ * platforms. Official sites are never reportable (null).
+ */
+export function linkReportable(u: Pick<UrlFinding, 'url' | 'host' | 'registrableDomain' | 'official' | 'shortener' | 'knownGood'>): Reportable | null {
+  if (u.official || !u.host) return null;
+  const exact = u.shortener || u.knownGood || !u.registrableDomain || IP_HOST.test(u.host) || PLATFORM_DOMAINS.has(u.registrableDomain);
+  if (exact) return { kind: 'url', value: u.url, display: u.url.replace(/^https?:\/\//i, '') };
+  return { kind: 'domain', value: u.registrableDomain, display: u.registrableDomain };
+}
+
 /** Identifiers in a verdict that can be looked up or reported. Official domains are skipped. */
 export function reportablesFrom(entities: Entities): Reportable[] {
   const out: Reportable[] = [];
@@ -92,9 +125,8 @@ export function reportablesFrom(entities: Entities): Reportable[] {
   for (const r of entities.upiRequests) add({ kind: 'upi', value: r.payee, display: r.payee });
   for (const p of entities.phones) add({ kind: 'phone', value: p.e164 || p.raw, display: p.raw });
   for (const u of entities.urls) {
-    if (u.official) continue;
-    if (u.shortener) add({ kind: 'url', value: u.url, display: u.url });
-    else if (u.registrableDomain) add({ kind: 'domain', value: u.registrableDomain, display: u.registrableDomain });
+    const link = linkReportable(u);
+    if (link) add(link);
   }
   for (const e of entities.emails) add({ kind: 'email', value: e, display: e });
   return out;
@@ -112,6 +144,10 @@ export interface ReportResult {
 /** Solve the proof-of-work in a Web Worker. */
 export function solveInWorker(prefix: string, difficulty: number, onProgress?: (tries: number) => void, signal?: AbortSignal): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
     const worker = new Worker(new URL('./pow.worker.ts', import.meta.url), { type: 'module' });
     const cleanup = () => worker.terminate();
     signal?.addEventListener('abort', () => {

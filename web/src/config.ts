@@ -23,9 +23,13 @@ export const config = {
   apiBase: apiBase || null,
 
   /** Source code. */
-  repo: { label: 'GitHub', url: 'https://github.com/YOUR-ORG/ruko', placeholder: true } satisfies ConfigLink,
+  repo: { label: 'GitHub', url: 'https://github.com/rutvirupani1111/ruko', placeholder: false } satisfies ConfigLink,
+  issues: { label: 'GitHub issues', url: 'https://github.com/rutvirupani1111/ruko/issues', placeholder: false } satisfies ConfigLink,
 
-  /** Browser extension store listings (Ruko Shield). */
+  /** Ruko Shield builds (Chrome, Edge, Firefox zips) are published on the GitHub releases page. */
+  releases: { label: 'GitHub releases', url: 'https://github.com/rutvirupani1111/ruko/releases', placeholder: false } satisfies ConfigLink,
+
+  /** Browser extension store listings (Ruko Shield). Not published yet. */
   extension: {
     chrome: { label: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/YOUR-EXTENSION-ID', placeholder: true },
     edge: { label: 'Microsoft Edge Add-ons', url: 'https://microsoftedge.microsoft.com/addons/detail/YOUR-EXTENSION-ID', placeholder: true },

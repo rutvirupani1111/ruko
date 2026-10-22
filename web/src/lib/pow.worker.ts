@@ -1,4 +1,4 @@
-import { solvePow } from './sha256';
+import { solvePow } from './pow';
 
 /**
  * Proof-of-work runs off the main thread so the page stays responsive on

@@ -163,6 +163,31 @@
   --chip: #ffffff;
   --line: #000000;
 }
+/* Elder mode in dark mode: the same high contrast, inverted, so the phone does not glare. */
+.dark .elder .mock-wa,
+.dark .elder .mock-sms,
+.dark .elder .mock-mail,
+.dark .elder .mock-pay {
+  --chat: #000000;
+  --in: #000000;
+  --in-fg: #ffffff;
+  --meta: #e8e8e8;
+  --sys: #000000;
+  --sys-fg: #ffffff;
+  --link: #a8c7ff;
+  --author: #ffffff;
+  --bar: #000000;
+  --field: #000000;
+  --card: #000000;
+  --card-fg: #ffffff;
+  --note: #000000;
+  --accent: #ffffff;
+  --accent-fg: #000000;
+  --cta: #ffffff;
+  --cta-fg: #000000;
+  --chip: #000000;
+  --line: #ffffff;
+}
 .elder .mock-call {
   --chat: #000000;
   --in: #000000;
