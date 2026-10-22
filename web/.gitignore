@@ -10,3 +10,6 @@ public/ocr
 *.local
 .vercel
 .DS_Store
+
+.vercel
+.env*
