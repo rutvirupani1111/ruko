@@ -1,10 +1,33 @@
 // @vitest-environment node
+import { createHash } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from './app';
 import { MIN_DIFFICULTY, SCAM_CATEGORIES } from './constants';
 import { openPglite, type Db } from './db';
-import { solvePow } from '../src/lib/sha256';
 import { CATEGORY_ORDER } from '../src/data/categories';
+import { solvePow as solvePowInBrowser } from '../src/lib/pow';
+
+/**
+ * Fast proof-of-work for these tests (Node's native SHA-256). The browser's
+ * solver (engine `sha256HexSync`, run in a Web Worker) is checked against the
+ * server once below; using it for every report here would make the suite slow.
+ */
+function solvePow(prefix: string, difficulty: number): number | null {
+  for (let nonce = 0; nonce < 2 ** 31; nonce++) {
+    const digest = createHash('sha256').update(prefix + nonce).digest();
+    let bits = 0;
+    for (const byte of digest) {
+      if (byte === 0) {
+        bits += 8;
+        continue;
+      }
+      bits += Math.clz32(byte) - 24;
+      break;
+    }
+    if (bits >= difficulty) return nonce;
+  }
+  return null;
+}
 
 let db: Db;
 
@@ -75,6 +98,21 @@ describe('community API', () => {
     expect(typeof entry.lastReportedAt).toBe('string');
     // The response never contains the full hash.
     expect(JSON.stringify(range)).not.toContain(hash);
+  });
+
+  it('accepts a proof from the browser solver (engine sha256HexSync) at full difficulty', async () => {
+    const app = makeApp();
+    const hash = await sha256Hex('domain:sbi-kyc-browser-proof.top');
+    const issuedAt = Date.now();
+    const nonce = solvePowInBrowser(`${hash}:${issuedAt}:`, MIN_DIFFICULTY);
+    expect(nonce).not.toBeNull();
+    const res = await report(app, {
+      hash,
+      kind: 'domain',
+      category: 'phishing_link',
+      pow: { nonce: String(nonce), issuedAt, difficulty: MIN_DIFFICULTY },
+    });
+    expect(res.status).toBe(201);
   });
 
   it('counts one report per person per day, and different people add up', async () => {
