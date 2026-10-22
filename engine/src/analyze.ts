@@ -28,7 +28,8 @@ import { evalRule, matchCue, type EvalContext, type Hit } from './rules/engine';
 import { isFreeMailDomain, parseSender, senderFlags, type SenderInfo } from './sender';
 import { scoreSignals, severityFor } from './score';
 import { buildAdvice } from './advice';
-import { t, type MessageKey } from './i18n';
+import { pick, t, type MessageKey } from './i18n';
+import { SHORT } from './shorts';
 
 const MAX_INPUT = 20000;
 
@@ -72,8 +73,8 @@ function emptyEntities(): Entities {
 
 let mentionRe: RegExp | null = null;
 let mentionMap: Map<string, Brand> | null = null;
-const MENTION_KINDS = new Set(['bank', 'pay', 'gov', 'post', 'tel', 'util', 'ins', 'fin', 'shop', 'travel']);
-const MENTION_STOP = new Set(['bob', 'upi', 'rto', 'lic', 'tez', 'gst', 'uber', 'yatra', 'apple', 'ola', 'cred', 'vahan', 'amzn', 'ekart']);
+const MENTION_KINDS = /* @__PURE__ */ new Set(['bank', 'pay', 'gov', 'post', 'tel', 'util', 'ins', 'fin', 'shop', 'travel']);
+const MENTION_STOP = /* @__PURE__ */ new Set(['bob', 'upi', 'rto', 'lic', 'tez', 'gst', 'uber', 'yatra', 'apple', 'ola', 'cred', 'vahan', 'amzn', 'ekart']);
 const EXTRA_MENTIONS: Array<[string, string]> = [
   ['state bank', 'sbi'], ['punjab national bank', 'pnb'], ['bank of baroda', 'bob'], ['india post', 'indiapost'],
   ['income tax', 'incometax'], ['blue dart', 'bluedart'], ['google pay', 'gpay'], ['amazon pay', 'amazonpay'],
@@ -289,7 +290,7 @@ function summaryFor(locale: Locale, score: number, category: ScamCategory | null
   if (sev === 'low') return t(locale, 'sum.low', { top });
   const label = t(locale, `cat.${category ?? 'other'}` as MessageKey);
   if (sev === 'medium') return t(locale, 'sum.medium', { label, top });
-  const short = t(locale, `short.${category ?? 'other'}` as MessageKey);
+  const short = pick(locale, SHORT[category ?? 'other']);
   if (pos.length > 1) return t(locale, 'sum.many', { short, n: pos.length, top });
   return t(locale, 'sum.one', { short, top });
 }

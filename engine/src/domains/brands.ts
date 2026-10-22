@@ -196,8 +196,8 @@ const SHORTENERS =
   'shorturl.asia ln.run tinu.be is.gd';
 
 /** Short-token affixes that make `sbikyc` or `mysbi` count as using the SBI name. */
-const AFFIXES = new Set(
-  (
+const AFFIXES = /* @__PURE__ */ new Set(
+  /* @__PURE__ */ (
     'kyc ekyc rekyc yono online net netbanking bank banking card cards reward rewards point points update updates ' +
     'verify verification login signin secure security help helpdesk care support service services customer refund ' +
     'refunds offer offers bonus gift gifts pay payment payments upi app apk india in ind official alert alerts block ' +
@@ -382,7 +382,7 @@ export interface BrandLabel {
   suffix: string;
 }
 
-const GENERIC_LABELS = new Set(['bank', 'live', 'office', 'meta', 'kite', 'media', 'pay']);
+const GENERIC_LABELS = /* @__PURE__ */ new Set(['bank', 'live', 'office', 'meta', 'kite', 'media', 'pay']);
 let labelCache: BrandLabel[] | null = null;
 let suffixCache: Map<string, string[]> | null = null;
 

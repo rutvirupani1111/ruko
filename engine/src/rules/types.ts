@@ -43,9 +43,17 @@ export interface RuleModule {
 }
 
 /** Gap helpers for patterns over normalised text (single spaces between words). */
-export const G1 = String.raw`(?: \S+)? `;
-export const G2 = String.raw`(?: \S+){0,2} `;
-export const G3 = String.raw`(?: \S+){0,3} `;
-export const G4 = String.raw`(?: \S+){0,4} `;
-export const G6 = String.raw`(?: \S+){0,6} `;
-export const r = String.raw;
+export const G1 = '(?: \\S+)? ';
+export const G2 = '(?: \\S+){0,2} ';
+export const G3 = '(?: \\S+){0,3} ';
+export const G4 = '(?: \\S+){0,4} ';
+export const G6 = '(?: \\S+){0,6} ';
+
+/**
+ * `String.raw` as a plain function, so patterns can be written as raw regex
+ * sources. Rule modules only call it inside their factory functions: nothing
+ * runs at import time, which keeps the package tree-shakeable.
+ */
+export function r(strings: TemplateStringsArray, ...values: unknown[]): string {
+  return String.raw(strings, ...values);
+}

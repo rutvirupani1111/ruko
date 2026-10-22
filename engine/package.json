@@ -1,6 +1,6 @@
 {
   "name": "@ruko/engine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "On-device scam detection engine for India: UPI, KYC, digital arrest, job, investment and courier scams in English, Hindi and Hinglish. Zero dependencies.",
   "license": "MIT",
   "author": "Rutvi Rupani",
@@ -8,6 +8,13 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "categories": [
+        "./dist/categories.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "import": {
@@ -17,6 +24,16 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./categories": {
+      "import": {
+        "types": "./dist/categories.d.ts",
+        "default": "./dist/categories.js"
+      },
+      "require": {
+        "types": "./dist/categories.d.cts",
+        "default": "./dist/categories.cjs"
       }
     },
     "./package.json": "./package.json"

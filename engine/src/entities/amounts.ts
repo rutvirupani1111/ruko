@@ -11,17 +11,26 @@ export interface RawAmount {
   currency: AmountFinding['currency'];
 }
 
-const NUM = String.raw`\d{1,3}(?:,\d{2,3})+(?:\.\d{1,2})?|\d+(?:\.\d+)?`;
-const MULT = String.raw`k|thousand|hazaa?r|हजार|lakhs?|lacs?|लाख|crores?|cr|करोड|million|mn`;
-const CUR_SUF = String.raw`rs\.?|rupees?|rupaye|rupay|rupaiya|rupiya|inr|₹|\/-|रुपये|रुपए|रुपया|रुपयों|रु\.?`;
-
-const RE_PRE = new RegExp(String.raw`(?:₹|rs\.?|inr|रु\.?)\s?(${NUM})(?:\s?(${MULT})(?![a-z]))?(?:\s?\/-)?`, 'g');
-const RE_SUF = new RegExp(String.raw`(${NUM})\s?(?:(${MULT})\s?)?(?:${CUR_SUF})(?![a-z])`, 'g');
-const RE_MULT = new RegExp(String.raw`(${NUM})\s?(lakhs?|lacs?|लाख|crores?|cr|करोड)(?![a-z])`, 'g');
 const RE_INDIAN = /\d{1,2}(?:,\d{2})+,\d{3}(?:\.\d{1,2})?/g;
 const RE_K = /(\d+(?:\.\d+)?)k(?![a-z0-9])/g;
-const RE_USD = new RegExp(String.raw`(?:\$|usd|us\$)\s?(${NUM})(?:\s?(k|thousand|million))?|(${NUM})\s?(?:usd|dollars?)(?![a-z])`, 'g');
-const RE_OTHER = new RegExp(String.raw`(?:€|£)\s?(${NUM})|(${NUM})\s?(?:usdt|eur|euros?|gbp|pounds?|aed|dirhams?|btc|bitcoins?)(?![a-z])`, 'g');
+
+let compiled: RegExp[] | null = null;
+
+/** The amount patterns, compiled on first use (nothing runs at import time). */
+function patterns(): RegExp[] {
+  if (!compiled) {
+    const NUM = String.raw`\d{1,3}(?:,\d{2,3})+(?:\.\d{1,2})?|\d+(?:\.\d+)?`;
+    const MULT = String.raw`k|thousand|hazaa?r|हजार|lakhs?|lacs?|लाख|crores?|cr|करोड|million|mn`;
+    const CUR_SUF = String.raw`rs\.?|rupees?|rupaye|rupay|rupaiya|rupiya|inr|₹|\/-|रुपये|रुपए|रुपया|रुपयों|रु\.?`;
+    const RE_PRE = new RegExp(String.raw`(?:₹|rs\.?|inr|रु\.?)\s?(${NUM})(?:\s?(${MULT})(?![a-z]))?(?:\s?\/-)?`, 'g');
+    const RE_SUF = new RegExp(String.raw`(${NUM})\s?(?:(${MULT})\s?)?(?:${CUR_SUF})(?![a-z])`, 'g');
+    const RE_MULT = new RegExp(String.raw`(${NUM})\s?(lakhs?|lacs?|लाख|crores?|cr|करोड)(?![a-z])`, 'g');
+    const RE_USD = new RegExp(String.raw`(?:\$|usd|us\$)\s?(${NUM})(?:\s?(k|thousand|million))?|(${NUM})\s?(?:usd|dollars?)(?![a-z])`, 'g');
+    const RE_OTHER = new RegExp(String.raw`(?:€|£)\s?(${NUM})|(${NUM})\s?(?:usdt|eur|euros?|gbp|pounds?|aed|dirhams?|btc|bitcoins?)(?![a-z])`, 'g');
+    compiled = [RE_PRE, RE_SUF, RE_MULT, RE_USD, RE_OTHER];
+  }
+  return compiled;
+}
 
 const MONEY_CONTEXT = /(earn|salary|income|per day|daily|\/day|a day|payment|pay|profit|kamao|kamaye|kamai|rozana|roz|कमा|रोज|₹|\brs\b|rupees|inr|invest|loan|bonus|reward)/;
 
@@ -45,6 +54,7 @@ export function findAmounts(n: string): RawAmount[] {
   const out: RawAmount[] = [];
   const overlaps = (s: number, e: number): boolean => out.some((a) => s < a.e && e > a.s);
   const leftOk = (s: number): boolean => s === 0 || !/[a-z0-9.,]/.test(n.charAt(s - 1));
+  const [RE_PRE, RE_SUF, RE_MULT, RE_USD, RE_OTHER] = patterns() as [RegExp, RegExp, RegExp, RegExp, RegExp];
   const run = (re: RegExp, fn: (m: RegExpExecArray) => { value: number; currency: RawAmount['currency'] } | null): void => {
     re.lastIndex = 0;
     let m: RegExpExecArray | null;

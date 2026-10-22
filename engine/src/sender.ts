@@ -21,7 +21,7 @@ export interface SenderInfo {
   displayName?: string;
 }
 
-const FREE_MAIL = new Set([
+const FREE_MAIL = /* @__PURE__ */ new Set([
   'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.in', 'ymail.com', 'outlook.com', 'hotmail.com',
   'live.com', 'msn.com', 'rediffmail.com', 'rediff.com', 'proton.me', 'protonmail.com', 'icloud.com', 'me.com',
   'aol.com', 'mail.com', 'yandex.com', 'yandex.ru', 'gmx.com', 'gmx.net', 'zoho.com', 'tutanota.com', 'inbox.com',

@@ -1,13 +1,15 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  // `@ruko/engine` and the `@ruko/engine/categories` subpath (the encyclopedia).
+  entry: { index: 'src/index.ts', categories: 'src/categories.ts' },
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
   sourcemap: true,
   treeshake: true,
-  splitting: false,
+  // Both entries share one copy of the encyclopedia in a chunk.
+  splitting: true,
   target: 'es2020',
   platform: 'neutral',
   minify: false,

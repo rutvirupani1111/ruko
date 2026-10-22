@@ -9,8 +9,8 @@ export type DetectedLanguage = 'en' | 'hi' | 'hinglish' | 'other';
  * Common Hindi words in Latin script that are not also everyday English words.
  * Ambiguous tokens ("the", "main", "to", "par", "band", "mat") are left out.
  */
-const HINGLISH = new Set(
-  (
+const HINGLISH = /* @__PURE__ */ new Set(
+  /* @__PURE__ */ (
     'hai hain hei hn aap aapka aapki aapke aapko apka apki apke apko tum tumhara tumhari tumhe tumko ' +
     'tera teri tere mera meri mere mujhe mujhko humne hamara hamari humko hume kya kyu kyun kyon nahi ' +
     'nahin nhi nai kar karo karein karen kare kariye kijiye karna karni karke krna krke kro kr raha rahi ' +

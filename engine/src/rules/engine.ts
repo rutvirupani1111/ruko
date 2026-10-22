@@ -50,11 +50,11 @@ export function compileRule(def: RuleDef): CompiledRule {
   return { def, groups: def.all.map(parseAlts), not: def.not ? parseAlts(def.not) : [] };
 }
 
-const NEG_BEFORE = new Set([
+const NEG_BEFORE = /* @__PURE__ */ new Set([
   'not', 'never', "don't", 'dont', 'do not', "didn't", 'cannot', "can't", 'no', 'nobody', 'nahi', 'nahin', 'nhi',
   'mat', 'na', 'kabhi', 'kbhi', 'न', 'ना', 'मत', 'नहीं', 'कभी', 'without', 'avoid', 'refuse', "won't", 'wont',
 ]);
-const NEG_AFTER = new Set(['mat', 'na', 'nahi', 'nahin', 'nhi', 'naa', 'न', 'ना', 'मत', 'नहीं']);
+const NEG_AFTER = /* @__PURE__ */ new Set(['mat', 'na', 'nahi', 'nahin', 'nhi', 'naa', 'न', 'ना', 'मत', 'नहीं']);
 
 /** A match is negated when one of the 3 words before it (same clause) or 2 words after it is a negation. */
 function negated(text: string, s: number, e: number): boolean {

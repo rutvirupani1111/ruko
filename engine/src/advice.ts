@@ -11,7 +11,7 @@ export const CYBERCRIME_PORTAL = 'https://cybercrime.gov.in';
 export const CHAKSHU_PORTAL = 'https://sancharsaathi.gov.in/sfc/';
 
 /** Categories where the scam directly targets bank, card or UPI money. */
-const MONEY = new Set<ScamCategory>([
+const MONEY = /* @__PURE__ */ new Set<ScamCategory>([
   'digital_arrest', 'kyc_update', 'upi_collect', 'qr_receive', 'fake_refund', 'job_task', 'investment', 'lottery_prize',
   'loan_app', 'sextortion', 'otp_theft', 'fake_support', 'courier_parcel', 'utility_disconnect', 'reward_points',
   'tax_refund', 'govt_scheme', 'malicious_app', 'remote_access', 'impersonation', 'romance', 'sim_swap', 'phishing_link',
@@ -19,7 +19,7 @@ const MONEY = new Set<ScamCategory>([
 ]);
 
 /** Categories where a code, PIN, password or device may already be compromised. */
-const COMPROMISE = new Set<ScamCategory>(['otp_theft', 'malicious_app', 'remote_access', 'sim_swap', 'phishing_link', 'lookalike_domain', 'kyc_update', 'reward_points']);
+const COMPROMISE = /* @__PURE__ */ new Set<ScamCategory>(['otp_theft', 'malicious_app', 'remote_access', 'sim_swap', 'phishing_link', 'lookalike_domain', 'kyc_update', 'reward_points']);
 
 export interface AdviceContext {
   /** The message arrived by SMS, call or WhatsApp, or contains phone numbers. */

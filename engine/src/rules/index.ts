@@ -1,5 +1,6 @@
 /**
  * All rule modules, merged and compiled once (lazily, on first analysis).
+ * Every module is a factory function, so importing this file runs nothing.
  */
 import { compileCue, compileRule, type CompiledRule } from './engine';
 import type { CueInput, RuleDef, RuleModule } from './types';
@@ -29,7 +30,7 @@ import { simSwap } from './sim_swap';
 import { phishingLink } from './phishing_link';
 import { lookalikeDomain } from './lookalike_domain';
 
-export const MODULES: RuleModule[] = [
+const FACTORIES: Array<() => RuleModule> = [
   shared,
   digitalArrest,
   kycUpdate,
@@ -57,6 +58,11 @@ export const MODULES: RuleModule[] = [
   lookalikeDomain,
 ];
 
+/** Build every rule module (getRuleSet() caches the compiled result). */
+export function modules(): RuleModule[] {
+  return FACTORIES.map((f) => f());
+}
+
 /** Context flags the analyser computes (referenced in rules as `@name`). */
 export const FLAGS = [
   'link', 'ulink', 'olink', 'short', 'risky_link', 'mobile', 'intl', 'intl_risky', 'phone', 'amount', 'bigamt', 'smallamt',
@@ -75,8 +81,9 @@ let cached: RuleSet | null = null;
 /** Merge, validate and compile every rule module. Throws on unknown cue or flag references. */
 export function getRuleSet(): RuleSet {
   if (cached) return cached;
+  const mods = modules();
   const defs = new Map<string, CueInput>();
-  for (const m of MODULES) {
+  for (const m of mods) {
     for (const id of Object.keys(m.cues)) {
       if (defs.has(id)) throw new Error(`@ruko/engine: duplicate cue "${id}"`);
       defs.set(id, m.cues[id] as CueInput);
@@ -85,7 +92,7 @@ export function getRuleSet(): RuleSet {
   const flagSet = new Set<string>(FLAGS);
   const ruleById = new Map<string, RuleDef>();
   const rules: CompiledRule[] = [];
-  for (const m of MODULES) {
+  for (const m of mods) {
     for (const def of m.rules) {
       if (ruleById.has(def.id)) throw new Error(`@ruko/engine: duplicate rule "${def.id}"`);
       ruleById.set(def.id, def);
@@ -117,7 +124,7 @@ export function getRuleSet(): RuleSet {
 /** Every cue id with its sources (used by tests to lint patterns). */
 export function allCueSources(): Array<{ id: string; sources: string[] }> {
   const out: Array<{ id: string; sources: string[] }> = [];
-  for (const m of MODULES) {
+  for (const m of modules()) {
     for (const id of Object.keys(m.cues)) {
       const c = m.cues[id] as CueInput;
       out.push({ id, sources: Array.isArray(c) ? c : c.p });
