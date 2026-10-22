@@ -22,8 +22,19 @@ export function romance(): RuleModule {
         r`paise (?:bhej|chahiye|de do)|पैसे (?:भेज|चाहिए)`,
       ],
       online_met: [r`instagram|facebook|dating|matrimony|shaadi\.com|jeevansathi|tinder|bumble|your profile|online`],
+      // "milne india aa rahi hu", "coming to India to meet you", "मिलने भारत आ रही हूं".
+      visit: [
+        r`(?:coming|flying|travel(?:l)?ing|arriving) to (?:india|meet you|see you)|(?:landed|arrived) in india`,
+        r`milne(?: \S+)? (?:aa rahi|aa raha|aayi|aaya|aaungi|aaunga|aa)|(?:india|bharat) (?:aa rahi|aa raha|aayi|aaya|aaungi|aaunga|pahunch(?:i|a|e)?)`,
+        r`मिलने(?: \S+)? (?:आ रही|आ रहा|आई|आया|आऊंगी|आऊंगा)|भारत (?:आ रही|आ रहा|आई|आया|पहुंच(?:ी|ा|े)?)`,
+      ],
     },
     rules: [
+      {
+        id: 'rom.visit_stuck', cat: 'romance', w: 40, all: ['visit', 'clearance', 'money_req|love_money|urgent_money|fee|fee_pay|@amount'],
+        en: ['"Coming to meet you" but stuck at the airport', 'A visitor held at customs who needs your money to get out is a classic romance-scam script.'],
+        hi: ['"मिलने आ रहे थे" पर एयरपोर्ट पर अटके', 'कस्टम में रोका गया "मेहमान" जिसे छूटने के लिए आपके पैसे चाहिए, रोमांस ठगी की पुरानी कहानी है।'],
+      },
       {
         id: 'rom.gift_customs', cat: 'romance', w: 55, all: ['gift_parcel', 'clearance', 'money_req|fee|fee_pay|love_money|small_fee|@amount'],
         en: ['Gift from abroad stuck at customs', 'The "gift" does not exist. The customs or courier "agent" is part of the same scam.'],

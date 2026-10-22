@@ -1,8 +1,8 @@
 # @ruko/engine status
 
 Progress log for the engine build. A continuation session should resume from "Next".
-Last updated: 2026-10-23, SHA-256 speed pass (v0.1.2). All checks green; `npm run size` still
-exits 1 because `analyze()` alone is over its 70 KB budget.
+Last updated: 2026-10-23, rule pass for the 6 corpus misses (v0.1.3). All checks green;
+`npm run size` still exits 1 because `analyze()` alone is over its 70 KB budget.
 
 ## Done
 
@@ -51,24 +51,41 @@ exits 1 because `analyze()` alone is over its 70 KB budget.
   sha256.ts, hash.ts or the leaf parsers will trip `npm run size`.
 - Not done this pass: the 6 missed scams (time budget went to the hash).
 
+### 0.1.3 rule pass (this session)
+
+- Closed all 6 misses with narrow rules (details in CHANGELOG): `inv.put_get`, reversed-order
+  `care_claim`, reversed-order `reg_fee` (Hinglish + Hindi), `gov.handout_fee`, `rom.visit_stuck`,
+  `sim.share_code`. `ENGINE_VERSION` and package.json are 0.1.3.
+- Verified against the 0.1.2 build: only those 6 verdicts change; the other 308 corpus items have
+  identical score, category and signals. Hindi locale scores equal English for all 314.
+- Kept narrow on purpose: no English "invest X get Y" (promo FP risk), no English "everyone gets
+  ₹X", and the reversed support pattern covers refund/cashback but not "complaint" ("call our care
+  on <mobile> for your complaint status" stays at 45). Probed genuine look-alikes (SIP ads, PM-Kisan
+  news, delivery-OTP and "do not share the code" notices, college form fees, a relative flying in):
+  all score 0.
+- Found, not fixed (broad): in shared `money_req`, alternations like `bhej|bhejo` match the prefix
+  first and the word-boundary check then rejects it, so "50 rs bhejo" and "paise bhejo" never match
+  `money_req`. Fixing the order touches every category that uses `money_req`; needs its own pass
+  with a full corpus diff.
+
 ## Test results (last run)
 
 - `npm run typecheck`: pass. `npm run build`: pass. `npm test`: 33/33 pass.
-- Corpus: recall 96.8% (182/188) at score >= 60 (threshold 95%); false positives 0.0% (0/126) at
-  score >= 35 (threshold 4%); top category correct for 90.7% of caught scams.
-  Recall by language: en 105/107, hi 38/40, hinglish 39/41.
-- Bench: 1,000 analyses in about 300 ms in Node (budget < 1 s); `sha256HexSync` on 90-byte inputs
+- Corpus: recall 100% (188/188) at score >= 60 (threshold 95%); false positives 0.0% (0/126) at
+  score >= 35 (threshold 4%); top category correct for 91.0% (171/188) of caught scams.
+  Recall by language: en 107/107, hi 40/40, hinglish 41/41.
+- Bench: 1,000 analyses in about 290 ms in Node (budget < 1 s); `sha256HexSync` on 90-byte inputs
   1.7-1.9 µs per hash (budget 4 µs), so an 18-bit proof-of-work averages about 0.5 s on this laptop.
 
 ## Bundle size (min+gzip, `npm run size`)
 
-| Import | 0.1.0 | 0.1.1 | 0.1.2 | Budget |
-| --- | --- | --- | --- | --- |
-| `identifierHash` only | 84.8 KB | 4.8 KB | 5.0 KB (5,116 B) | <= 5 KB, met (4 bytes spare) |
-| `analyzeUrl` only | (not measured) | 22.8 KB | 22.8 KB | |
-| `analyze` only | 99.0 KB | 80.4 KB | 80.4 KB | <= 70 KB, **not met** |
-| `CATEGORIES` / categories entry | 70.3 KB | 21.0 KB | 21.0 KB | |
-| full bundle (`export *`) | 101.1 KB | 100.3 KB | 100.6 KB | (old 60 KB target, not met) |
+| Import | 0.1.0 | 0.1.1 | 0.1.2 | 0.1.3 | Budget |
+| --- | --- | --- | --- | --- | --- |
+| `identifierHash` only | 84.8 KB | 4.8 KB | 5.0 KB (5,116 B) | 5.0 KB (hash code untouched) | <= 5 KB, met |
+| `analyzeUrl` only | (not measured) | 22.8 KB | 22.8 KB | 22.8 KB | |
+| `analyze` only | 99.0 KB | 80.4 KB | 80.4 KB | 81.9 KB | <= 70 KB, **not met** |
+| `CATEGORIES` / categories entry | 70.3 KB | 21.0 KB | 21.0 KB | 21.0 KB | |
+| full bundle (`export *`) | 101.1 KB | 100.3 KB | 100.6 KB | 101.9 KB | (old 60 KB target, not met) |
 
 Where the `analyze` bytes are (measured by blanking each part, gzip KB): rule regex patterns ~20,
 rule texts ~14.5 (hi 8.4, en 6.3), i18n tables ~8.8 (hi 5.2, en 3.6), category one-liners ~2.5,
@@ -78,11 +95,11 @@ dropping the per-rule `cat` field measured 0.4 KB.
 
 ## Not done / known issues
 
-- `analyze()` alone is 80.4 KB, 10.4 KB over the 70 KB budget (see breakdown above).
-- Remaining misses (6): inv-hi-2 (55), sup-en-2 (45), gov-hi-1 (55), gov-hl-1 (35), rom-hl-1 (55),
-  sim-en-2 (50). Ideas: "invest X and get Y" cue, reversed-order "contact ... for refund" in
-  care_claim, "free money for everyone" scheme cue, "coming to India" in romance foreign cue,
-  a sim.share_code rule.
+- `analyze()` alone is 81.9 KB, 11.9 KB over the 70 KB budget (see breakdown above; the 0.1.3
+  rules added 1.5 KB, mostly Hindi rule texts).
+- No corpus misses left, so recall is no longer a useful signal on this corpus: grow it with
+  fresh scams and more genuine look-alikes before trusting further rule changes.
+- `money_req` prefix-alternation bug (see 0.1.3 notes above): "50 rs bhejo", "paise bhejo" do not match.
 - Category mix-ups in some ambiguous items (phishing_link vs lookalike_domain, TRAI+police calls
   headlined as sim_swap, refund + AnyDesk headlined as remote_access).
 - The web app and extension still import CATEGORIES from the main entry (fine; switching to the
@@ -95,6 +112,7 @@ dropping the per-rule `cat` field measured 0.4 KB.
    normalisation makes unreachable (patterns are ~20 KB gz); move signal texts for rare rules into
    shorter titles where the detail repeats the title; keep the brand registry as compact strings.
    Re-measure with `npm run size -- --modules` (prints analyze() bytes per source file).
-2. Close the remaining misses listed above; add more genuine messages (promos with "win", bank loan
-   offers, telecom notices) to keep precision honest.
+2. Add new scams and more genuine messages (promos with "win", bank loan offers, telecom notices,
+   eSIM help pages, government scheme news) to keep recall and precision honest; then fix the
+   `money_req` alternation order with a full corpus diff.
 3. Optional: `tsconfig.test.json` so tests are type-checked too.

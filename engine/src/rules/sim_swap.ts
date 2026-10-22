@@ -19,6 +19,14 @@ export function simSwap(): RuleModule {
       recharge_ctx: [r`recharge|validity|plan|pack|balance|top-?up|रिचार्ज|वैलिडिटी`],
       illegal: [r`illegal|unlawful|suspicious|criminal|misuse(?:d)?|fraudulent|harass(?:ing|ment)|objectionable|अवैध|गैरकानूनी|गलत इस्तेमाल`],
       trai_dot: { free: true, p: [r`\btrai\b|telecom regulatory|department of telecom(?:munications?)?|\bdot\b (?:department|officer|india)|ट्राई|दूरसंचार विभाग`] },
+      // "share the code you receive with our executive": the code that completes the swap.
+      code_exec: {
+        neg: true,
+        p: [
+          r`(?:share|give|tell|send|forward) (?:the |this |that )?(?:code|otp)(?: \S+){0,3} (?:with|to) (?:our|the|an?) (?:executive|agent|representative|officer|team|caller)`,
+          r`(?:code|otp)(?: \S+){0,3} (?:executive|agent) (?:ko|se) (?:share|bata|bhej)|(?:कोड|ओटीपी)(?: \S+){0,3} (?:एग्जीक्यूटिव|एजेंट) को (?:बताएं|बताइए|भेजें|दें)`,
+        ],
+      },
     },
     rules: [
       {
@@ -30,6 +38,11 @@ export function simSwap(): RuleModule {
         id: 'sim.esim', cat: 'sim_swap', w: 50, all: ['esim', 'esim_act|@ulink|@mobile'], not: 'not_requested',
         en: ['eSIM or 5G "upgrade" request', 'Following these steps moves your number to the scammer’s phone, along with all your OTPs.'],
         hi: ['eSIM या 5G "अपग्रेड" की रिक्वेस्ट', 'ये स्टेप करने से आपका नंबर और सारे OTP ठग के फ़ोन पर चले जाते हैं।'],
+      },
+      {
+        id: 'sim.share_code', cat: 'sim_swap', w: 40, all: ['esim|sim|sim_threat', 'code_exec'], not: 'delivery_otp',
+        en: ['Asks you to give the code to their "executive"', 'That code moves your number to another SIM. No operator asks you to read it out to anyone.'],
+        hi: ['कोड उनके "एग्जीक्यूटिव" को देने को कहा', 'यह कोड आपका नंबर दूसरे सिम पर ले जाता है। कोई भी कंपनी इसे किसी को बताने को नहीं कहती।'],
       },
       {
         id: 'sim.trai', cat: 'sim_swap', w: 50, all: ['trai_dot', 'block_word|illegal|sim_threat|da_legal'],
