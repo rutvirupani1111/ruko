@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.3 (2026-10-23)
+
+Rule pass that closes the last 6 corpus misses. Verdicts change (`ENGINE_VERSION` is now `0.1.3`),
+but only for those 6 messages: the other 182 scams and all 126 genuine messages give identical
+scores, categories and signals to 0.1.2.
+
+- `inv.put_get` (investment, 40): "10,000 रुपये लगाइए और 20,000 रुपये पाइए", "5000 lagao aur 10000 pao".
+  Hindi and Hinglish only. inv-hi-2 55 -> 73.
+- `care_claim` also matches the reversed order "contact ... at <mobile> for an instant refund"
+  (refund or cashback only, still needs a mobile or foreign number). sup-en-2 45 -> 67.
+- `reg_fee` also matches "form bharne ke liye 50 rs bhejo" and "फॉर्म भरने के लिए 50 रुपये भेजें".
+  gov-hl-1 35 -> 71.
+- `gov.handout_fee` (govt_scheme, 30): "सभी महिलाओं को ₹5000 मिलेंगे" / "sabko 5000 rs milenge" with a
+  scheme and a fee. gov-hi-1 55 -> 69.
+- `rom.visit_stuck` (romance, 40): "coming to meet you / milne India aa rahi hu" plus airport or
+  customs plus money. rom-hl-1 55 -> 73.
+- `sim.share_code` (sim_swap, 40): "share the code you receive with our executive" in a SIM
+  context; negation-aware and suppressed for delivery OTPs. sim-en-2 50 -> 70.
+- Corpus: recall 100% (188/188, was 182/188), false positives 0/126, correct top category 171/188.
+- Size: `analyze()` alone grows 80.4 -> 81.9 KB min+gzip (budget 70 KB, still not met);
+  `identifierHash` unchanged (hashing code untouched).
+
 ## 0.1.2 (2026-10-23)
 
 Speed release for the web app's 18-bit report proof-of-work. Outputs are unchanged: every digest

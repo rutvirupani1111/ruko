@@ -1,6 +1,6 @@
 {
   "name": "@ruko/engine",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "On-device scam detection engine for India: UPI, KYC, digital arrest, job, investment and courier scams in English, Hindi and Hinglish. Zero dependencies.",
   "license": "MIT",
   "author": "Rutvi Rupani",

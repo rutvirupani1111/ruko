@@ -35,7 +35,7 @@ Ruko takes the opposite approach:
 
 | Part | Folder | What it is |
 |---|---|---|
-| **@ruko/engine** | [`engine/`](engine) | Zero-dependency TypeScript detection engine. 96.8% recall and 0% false positives on a 314-message labelled corpus; 1,000 checks in about 0.3 s. Runs in browsers, Node, Web Workers and MV3 service workers. |
+| **@ruko/engine** | [`engine/`](engine) | Zero-dependency TypeScript detection engine. 100% recall (188/188 scams) and 0% false positives (0/126 genuine messages) on a labelled corpus; 1,000 checks in about 0.3 s. Runs in browsers, Node, Web Workers and MV3 service workers. |
 | **Ruko web** | [`web/`](web) | Installable PWA (works offline, Android share target): live checking with QR and screenshot OCR, verdict card with highlighted red flags, Learn, Spot-the-scam simulator (21 bilingual scenarios), emergency help with a private complaint-draft generator, community reports with proof-of-work, privacy explainer. Hono API on Postgres. |
 | **Ruko Shield** | [`extension/`](extension) | Chrome, Edge and Firefox extension: badges under suspicious WhatsApp Web messages, banners above suspicious Gmail emails, a full-page warning on sites imitating a bank, link safety tooltips and a confirmation before any `upi://` payment link. |
 

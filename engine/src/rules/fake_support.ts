@@ -10,6 +10,8 @@ export function fakeSupport(): RuleModule {
       ],
       care_claim: [
         r`(?:customer care|helpline|support|care) (?:number|no\.?)(?: is)?|for (?:any )?(?:refund|complaint|help|support|query|issue|problem)s?(?: \S+){0,3} (?:call|contact|whatsapp|dial)`,
+        // Reversed order: "contact <brand> support at 98xxxxxxxx for an instant refund".
+        r`(?:call|contact|whatsapp|dial)(?: \S+){0,6} for (?:an? |your )?(?:instant |quick |immediate |full )?(?:refunds?|cashback)`,
         r`(?:refund|complaint|cashback|kyc|claim) (?:ke liye|ke lie|keliye)(?: \S+){0,3} (?:call|contact|sampark)|(?:रिफंड|शिकायत|कैशबैक) (?:के लिए|हेतु)(?: \S+){0,3} (?:कॉल|संपर्क)`,
       ],
     },

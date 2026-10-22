@@ -23,8 +23,18 @@ export function investment(): RuleModule {
       invest: [r`invest(?:ment|ing|ed|or)?s?|nivesh|निवेश|deposit|trading|portfolio`],
       invest_app: [r`(?:download|install|register on|join|sign ?up on) (?:our |the )?(?:trading |investment )?(?:app|platform|website)|our (?:trading|investment) (?:app|platform)`],
       group_join: [r`(?:join|add you to|added to) (?:our |the |this )?(?:\S+ )?(?:whatsapp |telegram )?(?:group|channel|community)|whatsapp group|telegram channel|ग्रुप (?:में|ज्वाइन)|group (?:join|me add)`],
+      // "10,000 रुपये लगाइए और 20,000 रुपये पाइए" / "10000 lagao aur 20000 pao": put in a sum, get a bigger one.
+      put_get: [
+        r`(?:₹ ?)?\d[\d,]* (?:रुपये |रुपए )?(?:लगाइए|लगाइये|लगाएं|लगाओ|निवेश करें)(?: और| तो)? (?:₹ ?)?\d[\d,]* (?:रुपये |रुपए )?(?:पाइए|पाइये|पाएं|पाओ|मिलेंगे|मिलेगा)`,
+        r`(?:₹ ?|rs\.? ?)?\d[\d,]*k? (?:rs |rupaye |rupees )?(?:lagao|lagaiye|lagayein|lagaye|laga do|invest karo|invest karein|invest kro)(?: aur| to)? (?:₹ ?|rs\.? ?)?\d[\d,]*k? (?:rs |rupaye |rupees )?(?:paao|pao|paiye|payein|paye|milenge|milega)`,
+      ],
     },
     rules: [
+      {
+        id: 'inv.put_get', cat: 'investment', w: 40, all: ['put_get'],
+        en: ['"Put in this much, get that much back"', 'Turning a sum into a bigger one in days is Ponzi bait. Early payouts come from newer victims’ money.'],
+        hi: ['"इतना लगाइए, उतना पाइए" वाला ऑफ़र', 'कुछ दिनों में रकम बढ़ाकर लौटाने का वादा पोंज़ी स्कीम का चारा है। शुरुआती मुनाफ़ा नए लोगों के पैसे से दिया जाता है।'],
+      },
       {
         id: 'inv.guaranteed', cat: 'investment', w: 45, all: ['guaranteed'], x: 'inv_g',
         en: ['Promises guaranteed or double returns', 'No real investment can guarantee profits. This is the hook of every investment scam.'],

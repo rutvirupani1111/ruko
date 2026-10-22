@@ -12,6 +12,14 @@ export function govtScheme(): RuleModule {
       reg_fee: [
         r`registration (?:fee|charges?|amount)|(?:apply|application|form|processing|file|verification|enrol(?:l)?ment) (?:fee|fees|charges?)|pay (?:₹|rs\.?|inr)? ?\d+ (?:to|for) (?:register|apply|activate|enrol)`,
         r`पंजीकरण (?:शुल्क|फीस)|आवेदन शुल्क|(?:₹|rs\.?)? ?\d+ (?:rs|rupaye|rupees)? ?(?:bhej|jama)(?: \S+){0,2} (?:form|registration|apply)|fees? (?:jama|bhej|pay) (?:karo|karein|kare)`,
+        // Reversed order: "form bharne ke liye 50 rs bhejo", "फॉर्म भरने के लिए 50 रुपये भेजें".
+        r`(?:form|registration|apply|aavedan)(?: \S+){0,2} (?:ke liye|ke lie|keliye) (?:₹ ?|rs\.? ?)?\d+(?: ?(?:rs|rupaye|rupees))? (?:bhejo|bhejiye|bhejein|bhej do|bhej|jama karo|jama karein|jama kare)`,
+        r`(?:फॉर्म|पंजीकरण|रजिस्ट्रेशन|आवेदन)(?: \S+){0,2} (?:के लिए|हेतु) (?:₹ ?)?\d+(?: रुपये| रुपए)? (?:भेजें|भेजो|भेजिए|जमा करें|जमा करो)`,
+      ],
+      // "सभी महिलाओं को ₹5000 मिलेंगे", "sabko 5000 rs milenge": a fixed cash handout for everyone.
+      handout: [
+        r`(?:(?:सभी|हर|सब)(?: \S+)? को|सबको) (?:₹ ?)?\d[\d,]*(?: रुपये| रुपए)? (?:मिलेंगे|मिलेगा|दिए जाएंगे)`,
+        r`(?:(?:sabhi|har|sab)(?: \S+)? ko|sabko) (?:₹ ?|rs\.? ?)?\d[\d,]*(?: ?(?:rs|rupaye|rupees))? (?:milenge|milega|diye jayenge)`,
       ],
       free: [r`free|मुफ्त|muft|free mein|फ्री`],
       forward_chain: [
@@ -24,6 +32,11 @@ export function govtScheme(): RuleModule {
         id: 'gov.scheme_fee', cat: 'govt_scheme', w: 55, all: ['scheme', 'reg_fee|fee|fee_pay|money_req'],
         en: ['Government scheme that asks for a fee', 'Government schemes never charge a fee over WhatsApp or SMS. Apply only on .gov.in sites or at a CSC.'],
         hi: ['फ़ीस माँगने वाली "सरकारी योजना"', 'सरकारी योजनाएं WhatsApp या SMS पर फ़ीस नहीं माँगतीं। आवेदन सिर्फ़ .gov.in साइट या CSC से करें।'],
+      },
+      {
+        id: 'gov.handout_fee', cat: 'govt_scheme', w: 30, all: ['handout', 'scheme', 'reg_fee|fee|fee_pay|money_req'],
+        en: ['"Everyone gets ₹X", after you pay a fee', 'No scheme pays everyone a fixed sum once they send a fee over chat. Check the scheme on its .gov.in site.'],
+        hi: ['"सबको ₹X मिलेंगे", पर पहले फ़ीस', 'कोई योजना चैट पर फ़ीस लेकर सबको तय रकम नहीं देती। योजना उसकी .gov.in साइट पर जाँचें।'],
       },
       {
         id: 'gov.scheme_link', cat: 'govt_scheme', w: 40, all: ['scheme', '@ulink|apk_word|install_app'], not: 'playstore',

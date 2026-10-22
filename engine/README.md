@@ -110,13 +110,13 @@ rule texts in two languages and the i18n tables are about two thirds of it; see 
 | `npm run size` | min+gzip size per import, checks the budgets (`--modules` for per-file bytes) |
 | `node scripts/try.mjs "text" [--hi]` | print a verdict from the built bundle |
 
-## Results (v0.1.1)
+## Results (v0.1.3)
 
 - Corpus: 188 scams, 126 genuine messages (English, Hindi, Hinglish).
-  Recall 96.8% at score >= 60 (required >= 95%); false positives 0.0% at score >= 35 (allowed <= 4%);
-  correct top category for 90.7% of caught scams.
+  Recall 100% at score >= 60 (required >= 95%); false positives 0.0% at score >= 35 (allowed <= 4%);
+  correct top category for 91.0% of caught scams.
 - Speed: about 300 µs per analysis in Node (1,000 analyses in about 0.3 s).
-- Size: see "Bundle size" above (`analyze` alone 80.4 KB, `identifierHash` alone 4.8 KB).
+- Size: see "Bundle size" above (`analyze` alone 81.9 KB, `identifierHash` alone 5.0 KB).
 
 ## License
 
