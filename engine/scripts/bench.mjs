@@ -1,6 +1,7 @@
 // Benchmark: 1,000 analyses must finish in under 1 second in Node.
+// Also times sha256HexSync on a 90-byte input (the web app's proof-of-work shape).
 // Run with `npm run bench` (builds first).
-import { analyze } from '../dist/index.js';
+import { analyze, sha256HexSync } from '../dist/index.js';
 
 const messages = [
   'Dear customer, your SBI YONO account will be blocked today. Please update your PAN card immediately: http://sbi-yono-kyc.in/update',
@@ -21,7 +22,36 @@ const t0 = performance.now();
 for (let i = 0; i < N; i++) analyze(messages[i % messages.length], { locale: i % 2 ? 'hi' : 'en' });
 const ms = performance.now() - t0;
 console.log(`${N} analyses in ${ms.toFixed(1)} ms (${((ms / N) * 1000).toFixed(0)} µs each)`);
+let failed = false;
 if (ms >= 1000) {
   console.error('Too slow: the budget is 1,000 analyses in under 1 second.');
-  process.exit(1);
+  failed = true;
 }
+
+// SHA-256 micro-benchmark. The web app's report proof-of-work hashes
+// `${identifierHash}:${issuedAt}:${nonce}` about 2^18 times per report, so this is
+// the loop a cheap phone runs. 64 hex + ':' + 13-digit time + ':' + 11-digit nonce = 90 bytes.
+const POW_BITS = 18;
+const HASH_BUDGET_US = 4; // 0.1.1 took ~8.6 µs here; 0.1.2 is well under 2 µs on a laptop.
+const prefix = `${'9f86d081884c7d65'.repeat(4)}:1761210000000:`;
+// 4,096 distinct inputs built before timing, so only the hashing is measured.
+const inputs = Array.from({ length: 4096 }, (_, i) => `${prefix}${10_000_000_000 + i}`);
+if (inputs.some((s) => s.length !== 90)) throw new Error('bench inputs must be 90 bytes');
+let zeros = 0;
+for (let i = 0; i < 20_000; i++) if (sha256HexSync(inputs[i & 4095]).charCodeAt(0) === 48) zeros++;
+const H = 200_000;
+const h0 = performance.now();
+for (let i = 0; i < H; i++) if (sha256HexSync(inputs[i & 4095]).charCodeAt(0) === 48) zeros++;
+const hashMs = performance.now() - h0;
+const usPerHash = (hashMs * 1000) / H;
+if (zeros === 0) throw new Error('sha256HexSync output looks wrong: no digest started with 0');
+console.log(
+  `sha256HexSync, 90-byte input: ${usPerHash.toFixed(2)} µs per hash ` +
+    `(${(H / hashMs).toFixed(0)}k hashes/s; a ${POW_BITS}-bit proof-of-work averages ` +
+    `${((2 ** POW_BITS * usPerHash) / 1e6).toFixed(2)} s here)`,
+);
+if (usPerHash > HASH_BUDGET_US) {
+  console.error(`Too slow: the budget is ${HASH_BUDGET_US} µs per 90-byte hash.`);
+  failed = true;
+}
+if (failed) process.exit(1);

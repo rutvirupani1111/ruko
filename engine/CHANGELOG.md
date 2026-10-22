@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.1.2 (2026-10-23)
+
+Speed release for the web app's 18-bit report proof-of-work. Outputs are unchanged: every digest
+matches `node:crypto`, all 314 corpus messages give identical verdicts, and `ENGINE_VERSION`
+stays `0.1.1` because rules and scoring did not change (so `Verdict.engineVersion` is identical too).
+
+- `sha256HexSync` is about 4.5x faster: 1.6-1.8 µs per 90-byte input, down from about 7.2 µs in
+  the same loop (Node 23, this laptop). An 18-bit proof-of-work now averages about 0.45 s here
+  instead of 1.9 s. What changed: one shared `TextEncoder` writes straight into a reused buffer
+  that is padded in place (no per-call encoder, copy or `DataView`); the message schedule and
+  state are reused `Int32Array`s and the rounds run on int32 locals; the hex digest is built from
+  a char-code table in one `String.fromCharCode` call instead of 32 `toString(16)` + `padStart`
+  concatenations. Inputs over 1,341 UTF-16 units get a buffer of their own, so a one-off large
+  hash is not kept alive. Still no work at import time.
+- `sha256Bytes` (internal) returns a fresh 32-byte array as before; `sha256Hex` still prefers
+  WebCrypto and reuses the same hex table.
+- The no-`TextEncoder` fallback is smaller and gives the same bytes as before (code points, with
+  lone surrogates encoded as themselves); checked against `node:crypto` on valid text with the
+  global removed.
+- Tests: SHA-256 vectors against `node:crypto` (empty, "abc", 56 bytes, 1,000 bytes, Hindi +
+  emoji UTF-8, the 90-byte proof-of-work shape), every length 0-200 run long-then-short so stale
+  bytes in the reused buffer would show, inputs past the shared buffer, lone surrogates, and
+  `sha256Bytes` at the padding boundaries.
+- `npm run bench` also reports µs per `sha256HexSync` call on 90-byte inputs and fails above 4 µs.
+- `identifierHash` alone stays within its 5 KB budget (5,116 bytes min+gzip).
+
 ## 0.1.1 (2026-10-23)
 
 Size and tree-shaking release. Verdicts are unchanged: all 314 corpus messages give identical

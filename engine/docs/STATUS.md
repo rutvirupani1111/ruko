@@ -1,8 +1,8 @@
 # @ruko/engine status
 
 Progress log for the engine build. A continuation session should resume from "Next".
-Last updated: 2026-10-23, size pass (v0.1.1). All checks green; `npm run size` still exits 1
-because `analyze()` alone is over its 70 KB budget.
+Last updated: 2026-10-23, SHA-256 speed pass (v0.1.2). All checks green; `npm run size` still
+exits 1 because `analyze()` alone is over its 70 KB budget.
 
 ## Done
 
@@ -36,23 +36,39 @@ because `analyze()` alone is over its 70 KB budget.
 - Verified identical behaviour against the 0.1.0 source: 628 verdicts (314 corpus items x 2 locales),
   CATEGORIES deep-equal, normalizeIdentifier on 13,725 inputs x kinds, 0 differences.
 
+### 0.1.2 SHA-256 speed pass (this session)
+
+- `sha256HexSync` rewritten for the web app's 18-bit proof-of-work loop (src/sha256.ts): shared
+  TextEncoder `encodeInto` a reused 4 KB buffer padded in place, reused Int32Array schedule and
+  state, int32 rounds, hex from a char-code table via one `String.fromCharCode`. Inputs over 1,341
+  UTF-16 units use their own buffer. Same loop, same machine: 0.1.1 ~7.2 µs per 90-byte hash,
+  0.1.2 ~1.57 µs in isolation and 1.7-1.9 µs inside `npm run bench` (4.0-4.6x).
+- Output identical: new tests compare against `node:crypto` (vectors, lengths 0-200 long-then-short,
+  inputs past the shared buffer, multi-byte UTF-8, lone surrogates, `sha256Bytes` boundaries).
+  Corpus verdicts unchanged (182/188, 0/126). `ENGINE_VERSION` left at 0.1.1 (rules and scoring
+  unchanged); package.json is 0.1.2.
+- `identifierHash` alone is 5,116 bytes min+gzip, 4 bytes under its 5 KB budget: any growth in
+  sha256.ts, hash.ts or the leaf parsers will trip `npm run size`.
+- Not done this pass: the 6 missed scams (time budget went to the hash).
+
 ## Test results (last run)
 
-- `npm run typecheck`: pass. `npm run build`: pass. `npm test`: 31/31 pass.
+- `npm run typecheck`: pass. `npm run build`: pass. `npm test`: 33/33 pass.
 - Corpus: recall 96.8% (182/188) at score >= 60 (threshold 95%); false positives 0.0% (0/126) at
   score >= 35 (threshold 4%); top category correct for 90.7% of caught scams.
   Recall by language: en 105/107, hi 38/40, hinglish 39/41.
-- Bench: 1,000 analyses in about 300 ms in Node (budget < 1 s).
+- Bench: 1,000 analyses in about 300 ms in Node (budget < 1 s); `sha256HexSync` on 90-byte inputs
+  1.7-1.9 µs per hash (budget 4 µs), so an 18-bit proof-of-work averages about 0.5 s on this laptop.
 
 ## Bundle size (min+gzip, `npm run size`)
 
-| Import | 0.1.0 | 0.1.1 | Budget |
-| --- | --- | --- | --- |
-| `identifierHash` only | 84.8 KB | 4.8 KB | <= 5 KB, met |
-| `analyzeUrl` only | (not measured) | 22.8 KB | |
-| `analyze` only | 99.0 KB | 80.4 KB | <= 70 KB, **not met** |
-| `CATEGORIES` / categories entry | 70.3 KB | 21.0 KB | |
-| full bundle (`export *`) | 101.1 KB | 100.3 KB | (old 60 KB target, not met) |
+| Import | 0.1.0 | 0.1.1 | 0.1.2 | Budget |
+| --- | --- | --- | --- | --- |
+| `identifierHash` only | 84.8 KB | 4.8 KB | 5.0 KB (5,116 B) | <= 5 KB, met (4 bytes spare) |
+| `analyzeUrl` only | (not measured) | 22.8 KB | 22.8 KB | |
+| `analyze` only | 99.0 KB | 80.4 KB | 80.4 KB | <= 70 KB, **not met** |
+| `CATEGORIES` / categories entry | 70.3 KB | 21.0 KB | 21.0 KB | |
+| full bundle (`export *`) | 101.1 KB | 100.3 KB | 100.6 KB | (old 60 KB target, not met) |
 
 Where the `analyze` bytes are (measured by blanking each part, gzip KB): rule regex patterns ~20,
 rule texts ~14.5 (hi 8.4, en 6.3), i18n tables ~8.8 (hi 5.2, en 3.6), category one-liners ~2.5,
