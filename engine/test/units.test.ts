@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { sha256Bytes } from '../src/sha256';
 import {
   analyze,
   analyzePhone,
@@ -163,6 +165,45 @@ describe('hashing', () => {
       '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1',
     );
     expect(sha256HexSync('a'.repeat(1000))).toBe('41edece42d63e8d9bf515a9ba6932e1c20cbc9f5a5d134645adb5db1b9737ea3');
+  });
+  it('matches node:crypto on test vectors, every padding boundary and multi-byte UTF-8', () => {
+    const node = (s: string | Uint8Array): string => createHash('sha256').update(s).digest('hex');
+    const vectors = [
+      '',
+      'abc',
+      'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq',
+      'a'.repeat(1000),
+      'प्रिय ग्राहक, KYC अपडेट करें ₹5,000 café 🙏🏽 नमस्ते',
+      `${'9f86d081884c7d65'.repeat(4)}:1761210000000:10000000000`,
+    ];
+    expect(vectors[2]!.length).toBe(56);
+    expect(vectors[5]!.length).toBe(90);
+    for (const v of vectors) expect(sha256HexSync(v), JSON.stringify(v.slice(0, 20))).toBe(node(v));
+    // Long then short, so stale bytes in the reused buffer would show up.
+    for (let n = 0; n <= 200; n++) {
+      const long = 'z'.repeat(n + 300);
+      expect(sha256HexSync(long)).toBe(node(long));
+      const s = 'x'.repeat(n);
+      expect(sha256HexSync(s), `length ${n}`).toBe(node(s));
+    }
+    // Bigger than the shared buffer (own buffer), including multi-byte text.
+    for (const big of ['a'.repeat(5000), 'é'.repeat(1400), 'नमस्ते'.repeat(400), '😀'.repeat(700)]) {
+      expect(sha256HexSync(big)).toBe(node(big));
+    }
+    // Lone surrogates become U+FFFD, as with TextEncoder.
+    expect(sha256HexSync('a\ud800b')).toBe(node('a�b'));
+  });
+  it('hashes raw bytes into a fresh array each call', () => {
+    const one = new Uint8Array([1, 2, 3]);
+    const a = sha256Bytes(one);
+    const b = sha256Bytes(new Uint8Array(5000).fill(7));
+    expect(a).not.toBe(b);
+    expect(Buffer.from(a).toString('hex')).toBe(createHash('sha256').update(one).digest('hex'));
+    expect(Buffer.from(b).toString('hex')).toBe(createHash('sha256').update(new Uint8Array(5000).fill(7)).digest('hex'));
+    for (const n of [0, 55, 56, 63, 64, 119, 120, 4024, 4025]) {
+      const bytes = new Uint8Array(n).map((_, i) => (i * 31) & 255);
+      expect(Buffer.from(sha256Bytes(bytes)).toString('hex'), `length ${n}`).toBe(createHash('sha256').update(bytes).digest('hex'));
+    }
   });
   it('normalizes phone and upi:// identifiers without the analysers', () => {
     expect(normalizeIdentifier('phone', '0044 20 7946 0958')).toBe('442079460958');
