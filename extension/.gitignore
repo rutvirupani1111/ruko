@@ -1,0 +1,9 @@
+node_modules
+.output
+.wxt
+stats.html
+test-results
+playwright-report
+blob-report
+.e2e-profile*
+*.log

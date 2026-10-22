@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.output/
+.wxt/
+.vercel/
+.data/
+.cache/
+coverage/
+test-results/
+playwright-report/
+*.log
+*.tgz
+.env.local
+.env.*.local
+.DS_Store

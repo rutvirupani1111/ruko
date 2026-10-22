@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Inbox - Mail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Test fixture imitating the parts of Gmail's DOM that Ruko reads: h2.hP (subject),
+      span.gD[email] (sender) and div.a3s (body), inside a [data-message-id] container.
+      Served at https://mail.google.com/ by Playwright request interception only.
+    -->
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f6f8fc;
+        color: #1f1f1f;
+      }
+      .top {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        gap: 16px;
+      }
+      .logo {
+        font-size: 22px;
+        color: #444746;
+        width: 210px;
+      }
+      .search {
+        flex: 1;
+        max-width: 720px;
+        background: #e9eef6;
+        border-radius: 24px;
+        padding: 12px 20px;
+        color: #5f6368;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+      }
+      nav {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+      nav div {
+        padding: 8px 16px;
+        border-radius: 16px;
+      }
+      nav .active {
+        background: #d3e3fd;
+        font-weight: bold;
+      }
+      main {
+        background: #fff;
+        border-radius: 16px;
+        margin: 0 16px 16px 0;
+        padding: 20px 28px;
+        min-height: calc(100vh - 100px);
+      }
+      h2.hP {
+        font-size: 22px;
+        font-weight: 400;
+        margin: 4px 0 20px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #1a73e8;
+        color: #fff;
+        display: grid;
+        place-items: center;
+      }
+      .gD {
+        font-weight: bold;
+      }
+      .go {
+        color: #5f6368;
+        font-size: 13px;
+      }
+      .a3s {
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 760px;
+      }
+      .a3s a {
+        color: #1a73e8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top"><div class="logo">Mail</div><div class="search">Search mail</div></div>
+    <div class="layout">
+      <nav><div class="active">Inbox</div><div>Starred</div><div>Sent</div></nav>
+      <main role="main">
+        <h2 class="hP">Urgent: Your HDFC Bank account will be suspended today</h2>
+        <div class="adn ads" data-message-id="#msg-f:1780000000000000001">
+          <div class="header">
+            <div class="avatar">H</div>
+            <div>
+              <h3 class="iw"><span class="gD" email="alerts@hdfcbank-rewards.in" name="HDFC Bank Alerts">HDFC Bank Alerts</span> <span class="go">&lt;alerts@hdfcbank-rewards.in&gt;</span></h3>
+              <div class="go">to me</div>
+            </div>
+          </div>
+          <div class="ii gt">
+            <div class="a3s aiL" data-testid="email-body">
+              <p>Dear Customer,</p>
+              <p>Your KYC verification is pending and your HDFC Bank NetBanking account will be blocked today. To avoid suspension, update your KYC and PAN details immediately using the secure link below.</p>
+              <p><a href="http://hdfcbank-rewards.in/kyc-update">Update KYC now</a></p>
+              <p>You will receive an OTP. Share the OTP with our verification officer when they call you to complete the process.</p>
+              <p>Regards,<br />HDFC Bank KYC Team</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

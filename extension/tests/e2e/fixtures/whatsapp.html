@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>WhatsApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Test fixture that imitates the parts of WhatsApp Web's DOM that Ruko reads:
+      #main, .message-in / .message-out rows and [data-pre-plain-text] containers
+      with span.selectable-text inside. Served at https://web.whatsapp.com/ by
+      Playwright request interception; it never talks to the real WhatsApp.
+    -->
+    <style>
+      :root {
+        --bg: #efeae2;
+        --panel: #ffffff;
+        --header: #f0f2f5;
+        --in: #ffffff;
+        --out: #d9fdd3;
+        --text: #111b21;
+        --muted: #667781;
+        --border: #e9edef;
+        --accent: #008069;
+      }
+      body.dark {
+        --bg: #0b141a;
+        --panel: #111b21;
+        --header: #202c33;
+        --in: #202c33;
+        --out: #005c4b;
+        --text: #e9edef;
+        --muted: #8696a0;
+        --border: #222d34;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: var(--header);
+      }
+      #app {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        height: 100vh;
+        border-top: 6px solid var(--accent);
+      }
+      #side {
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .side-header,
+      #main header {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        background: var(--header);
+        border-bottom: 1px solid var(--border);
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        color: #fff;
+        flex: none;
+      }
+      .search {
+        margin: 8px 12px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: var(--header);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .chat {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .chat.active {
+        background: var(--header);
+      }
+      .chat .name {
+        font-size: 16px;
+      }
+      .chat .last {
+        font-size: 13px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 230px;
+      }
+      #main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        background: var(--bg);
+      }
+      #main header .title {
+        font-size: 16px;
+      }
+      #main header .sub {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 7%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .day {
+        align-self: center;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 12.5px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        margin: 6px 0;
+      }
+      .message-in,
+      .message-out {
+        display: flex;
+      }
+      .message-out {
+        justify-content: flex-end;
+      }
+      .bubble {
+        max-width: 65%;
+        padding: 6px 9px 8px;
+        border-radius: 8px;
+        background: var(--in);
+        box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+        font-size: 14.2px;
+        line-height: 19px;
+      }
+      .message-out .bubble {
+        background: var(--out);
+      }
+      .meta {
+        float: right;
+        margin: 6px 0 -4px 10px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .selectable-text a {
+        color: #027eb5;
+      }
+      footer {
+        height: 62px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        background: var(--header);
+        color: var(--muted);
+        font-size: 15px;
+      }
+      footer div {
+        flex: 1;
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 10px 14px;
+      }
+    </style>
+  </head>
+  <body class="web">
+    <div id="app">
+      <div id="side">
+        <div class="side-header"><div class="avatar" style="background: #6b7c85">Me</div></div>
+        <div class="search">Search or start a new chat</div>
+        <div class="chat active">
+          <div class="avatar" style="background: #c2410c">P</div>
+          <div><div class="name">Pooja Didi</div><div class="last">Forwarded messages</div></div>
+        </div>
+        <div class="chat">
+          <div class="avatar" style="background: #0f766e">A</div>
+          <div><div class="name">Asha Aunty</div><div class="last">Reached home safely</div></div>
+        </div>
+        <div class="chat">
+          <div class="avatar" style="background: #4338ca">R</div>
+          <div><div class="name">Rohan</div><div class="last">Meeting moved to 4 pm</div></div>
+        </div>
+      </div>
+
+      <div id="main">
+        <header>
+          <div class="avatar" style="background: #c2410c">P</div>
+          <div><div class="title">Pooja Didi</div><div class="sub">online</div></div>
+        </header>
+        <div class="messages" role="application" aria-label="Message list">
+          <div class="day">TODAY</div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-genuine-1">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[09:58, 23/10/2026] Pooja Didi: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Good morning! Reached Pune safely, will call you after lunch.</span></span></div>
+              </div>
+              <div class="meta">09:58</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-kyc">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:15, 23/10/2026] +91 98111 22233: ">
+                <div>
+                  <span class="selectable-text copyable-text" dir="ltr"><span>Dear SBI customer, your YONO account will be BLOCKED today. Your KYC is pending. Update your KYC and PAN immediately at <a href="http://sbi-kyc-update.top/login" target="_blank" rel="noopener noreferrer">http://sbi-kyc-update.top/login</a> to avoid suspension.</span></span>
+                </div>
+              </div>
+              <div class="meta">10:15</div>
+            </div>
+          </div>
+
+          <div class="message-out focusable-list-item" data-testid="msg-out">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:17, 23/10/2026] Me: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Didi this is fake: "your YONO account will be BLOCKED today, update KYC at sbi-kyc-update.top". Don't click!</span></span></div>
+              </div>
+              <div class="meta">10:17</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-job">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:21, 23/10/2026] +92 301 4455667: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Hello! Part time job offer. Earn ₹5000 per day from home by liking YouTube videos. Simple tasks, daily payment. Join our Telegram group @hr_tasks_daily for prepaid tasks.</span></span></div>
+              </div>
+              <div class="meta">10:21</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-genuine-2">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:30, 23/10/2026] Pooja Didi: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Mummy is asking if you are coming for dinner on Sunday. Bring the photos from the trip 😊</span></span></div>
+              </div>
+              <div class="meta">10:30</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-arrest">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:42, 23/10/2026] +91 70000 12345: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>This is Inspector Sharma from CBI Mumbai cyber crime cell. Your Aadhaar is used in a money laundering case and an arrest warrant is issued. Join the Skype video call now and stay on camera. Do not tell anyone about this case.</span></span></div>
+              </div>
+              <div class="meta">10:42</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-genuine-3">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:45, 23/10/2026] Pooja Didi: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Train tickets booked for Diwali, sharing the PNR on email. Check <a href="https://www.irctc.co.in/" target="_blank" rel="noopener noreferrer">https://www.irctc.co.in/</a> for the status.</span></span></div>
+              </div>
+              <div class="meta">10:45</div>
+            </div>
+          </div>
+
+          <div class="message-in focusable-list-item" data-testid="msg-upi">
+            <div class="bubble">
+              <div class="copyable-text" data-pre-plain-text="[10:50, 23/10/2026] +91 88888 00000: ">
+                <div><span class="selectable-text copyable-text" dir="ltr"><span>Sir your refund of ₹4,999 is approved. Tap here to receive the refund in your account: <a href="upi://pay?pa=refund.helpdesk@ybl&amp;pn=Refund%20Desk&amp;am=4999&amp;tn=refund%20receive&amp;cu=INR">Receive ₹4,999 refund</a> and enter your UPI PIN to receive.</span></span></div>
+              </div>
+              <div class="meta">10:50</div>
+            </div>
+          </div>
+        </div>
+        <footer><div>Type a message</div></footer>
+      </div>
+    </div>
+    <script>
+      if (new URLSearchParams(location.search).get('theme') === 'dark') document.body.classList.add('dark');
+    </script>
+  </body>
+</html>

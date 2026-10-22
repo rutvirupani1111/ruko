@@ -1,0 +1,1033 @@
+/*
+ * Ruko Shield in-page UI. Adopted into every Ruko shadow root, never into the page.
+ * Brand tokens from SPEC "Brand and design system". System fonts only: injected UI
+ * never loads web fonts into the host page.
+ */
+:host {
+  all: initial;
+  --rk-ink: #0b1020;
+  --rk-paper: #fbf8f2;
+  --rk-saffron: #ff7a1a;
+  --rk-saffron-strong: #e8650a;
+  --rk-indigo: #4f46e5;
+  --rk-safe: #10b981;
+  --rk-caution: #f59e0b;
+  --rk-danger: #e11d48;
+  --rk-critical: #9f1239;
+
+  --rk-bg: #ffffff;
+  --rk-surface: #fbf8f2;
+  --rk-raised: #ffffff;
+  --rk-text: #0b1020;
+  --rk-muted: #4a5068;
+  --rk-border: rgba(11, 16, 32, 0.12);
+  --rk-shadow: 0 18px 48px rgba(11, 16, 32, 0.22), 0 3px 10px rgba(11, 16, 32, 0.1);
+  --rk-focus: #4f46e5;
+  --rk-safe-text: #047857;
+  --rk-caution-text: #92400e;
+  --rk-danger-text: #be123c;
+  --rk-safe-tint: #e7f8f1;
+  --rk-caution-tint: #fff4dd;
+  --rk-danger-tint: #ffe8ed;
+  --rk-indigo-tint: #ecebff;
+
+  --rk-font: Inter, 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', 'Noto Sans', 'Nirmala UI',
+    'Noto Sans Devanagari', 'Kohinoor Devanagari', Mukta, sans-serif;
+  --rk-line: 1.45;
+}
+
+/* Hindi: Devanagari-first stack and a little more line height. */
+:host([lang='hi']) {
+  --rk-font: 'Nirmala UI', 'Noto Sans Devanagari', 'Kohinoor Devanagari', Mukta, Inter, 'Segoe UI', system-ui,
+    sans-serif;
+  --rk-line: 1.55;
+}
+
+:host([data-theme='dark']) {
+  --rk-bg: #141a2e;
+  --rk-surface: #0b1020;
+  --rk-raised: #1b2238;
+  --rk-text: #f4f1ea;
+  --rk-muted: #aab0c4;
+  --rk-border: rgba(255, 255, 255, 0.14);
+  --rk-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), 0 3px 10px rgba(0, 0, 0, 0.35);
+  --rk-focus: #a5b4fc;
+  --rk-safe-text: #6ee7b7;
+  --rk-caution-text: #fcd34d;
+  --rk-danger-text: #fda4af;
+  --rk-safe-tint: rgba(16, 185, 129, 0.16);
+  --rk-caution-tint: rgba(245, 158, 11, 0.16);
+  --rk-danger-tint: rgba(225, 29, 72, 0.2);
+  --rk-indigo-tint: rgba(79, 70, 229, 0.24);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * Every top-level Ruko container sets its own typography. The host element carries
+ * an inline `all: initial !important` (so page CSS cannot restyle it), which also
+ * blocks inheritance from :host; custom properties survive `all`, so the tokens
+ * above still reach everything below.
+ */
+.rk-badge,
+.rk-pop,
+.rk-banner,
+.rk-tip,
+.rk-backdrop,
+.rk-gate {
+  font-family: var(--rk-font);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--rk-line);
+  color: var(--rk-text);
+  text-align: start;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--rk-focus);
+  outline-offset: 2px;
+}
+
+.rk-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  stroke-width: 2.25;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ---------- shared pieces ---------- */
+
+.rk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+:host([lang='hi']) .rk-chip {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.rk-sev-safe .rk-chip,
+.rk-chip.rk-sev-safe {
+  background: var(--rk-safe-tint);
+  color: var(--rk-safe-text);
+}
+
+.rk-sev-low .rk-chip,
+.rk-chip.rk-sev-low {
+  background: var(--rk-indigo-tint);
+  color: var(--rk-text);
+}
+
+.rk-sev-medium .rk-chip,
+.rk-chip.rk-sev-medium {
+  background: var(--rk-caution);
+  color: var(--rk-ink);
+}
+
+.rk-sev-high .rk-chip,
+.rk-chip.rk-sev-high {
+  background: var(--rk-danger);
+  color: #ffffff;
+}
+
+.rk-sev-critical .rk-chip,
+.rk-chip.rk-sev-critical {
+  background: var(--rk-critical);
+  color: #ffffff;
+}
+
+.rk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 650;
+  font-size: 13px;
+  text-decoration: none;
+  line-height: 1.2;
+  transition:
+    transform 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.rk-btn:active {
+  transform: translateY(1px);
+}
+
+.rk-btn--primary {
+  background: var(--rk-saffron);
+  color: var(--rk-ink);
+  box-shadow: 0 1px 0 rgba(11, 16, 32, 0.15);
+}
+
+.rk-btn--primary:hover {
+  background: var(--rk-saffron-strong);
+}
+
+.rk-btn--danger {
+  background: var(--rk-danger);
+  color: #ffffff;
+}
+
+.rk-btn--danger:hover {
+  background: var(--rk-critical);
+}
+
+.rk-btn--quiet {
+  background: transparent;
+  color: var(--rk-text);
+  border: 1px solid var(--rk-border);
+}
+
+.rk-btn--quiet:hover {
+  background: var(--rk-surface);
+}
+
+.rk-btn--link {
+  min-height: 0;
+  padding: 4px 2px;
+  color: var(--rk-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+.rk-btn--link:hover {
+  color: var(--rk-text);
+}
+
+.rk-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--rk-muted);
+}
+
+.rk-icon-btn:hover {
+  background: var(--rk-surface);
+  color: var(--rk-text);
+}
+
+.rk-meter {
+  position: relative;
+  width: 64px;
+  height: 40px;
+  flex: none;
+}
+
+.rk-meter svg {
+  display: block;
+  width: 64px;
+  height: 36px;
+}
+
+.rk-meter__value {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.rk-meter__track {
+  stroke: var(--rk-border);
+}
+
+.rk-section-title {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rk-muted);
+  margin: 12px 0 6px;
+}
+
+:host([lang='hi']) .rk-section-title {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12.5px;
+}
+
+.rk-signals {
+  display: grid;
+  gap: 6px;
+}
+
+.rk-signal {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 6px;
+  align-items: start;
+}
+
+.rk-signal .rk-icon {
+  margin-top: 1px;
+  width: 15px;
+  height: 15px;
+  color: var(--rk-danger-text);
+}
+
+.rk-signal--good .rk-icon {
+  color: var(--rk-safe-text);
+}
+
+.rk-signal--note .rk-icon {
+  color: var(--rk-muted);
+}
+
+.rk-signal__title {
+  font-weight: 650;
+}
+
+.rk-signal__detail {
+  color: var(--rk-muted);
+  font-size: 12.5px;
+}
+
+.rk-links {
+  display: grid;
+  gap: 4px;
+}
+
+.rk-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  min-width: 0;
+}
+
+.rk-link__host {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.rk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rk-advice {
+  display: grid;
+  gap: 6px;
+}
+
+.rk-advice li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 6px;
+}
+
+.rk-advice .rk-icon {
+  width: 15px;
+  height: 15px;
+  margin-top: 1px;
+  color: var(--rk-indigo);
+}
+
+:host([data-theme='dark']) .rk-advice .rk-icon {
+  color: #a5b4fc;
+}
+
+.rk-advice__title {
+  font-weight: 650;
+}
+
+.rk-advice__detail {
+  color: var(--rk-muted);
+  font-size: 12.5px;
+}
+
+.rk-community {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--rk-indigo-tint);
+  font-size: 12px;
+}
+
+.rk-community small {
+  color: var(--rk-muted);
+}
+
+.rk-brandline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rk-border);
+  color: var(--rk-muted);
+  font-size: 11.5px;
+}
+
+.rk-mark {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+@keyframes rk-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rk-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rk-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* ---------- WhatsApp badge ---------- */
+
+.rk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 4px 0 2px;
+  padding: 4px 10px 4px 7px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-align: start;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+  animation: rk-fade 160ms ease-out;
+}
+
+.rk-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(11, 16, 32, 0.16);
+}
+
+.rk-badge__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rk-badge__sep {
+  opacity: 0.6;
+}
+
+.rk-badge__why {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.rk-badge.rk-sev-low {
+  background: var(--rk-indigo-tint);
+  border-color: rgba(79, 70, 229, 0.35);
+  color: var(--rk-text);
+}
+
+.rk-badge.rk-sev-medium {
+  background: var(--rk-caution-tint);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: var(--rk-caution-text);
+}
+
+.rk-badge.rk-sev-high {
+  background: var(--rk-danger-tint);
+  border-color: rgba(225, 29, 72, 0.45);
+  color: var(--rk-danger-text);
+}
+
+.rk-badge.rk-sev-critical {
+  background: var(--rk-critical);
+  border-color: var(--rk-critical);
+  color: #ffffff;
+}
+
+/* ---------- popover ---------- */
+
+.rk-pop {
+  position: fixed;
+  z-index: 2147483646;
+  width: 344px;
+  max-width: calc(100vw - 16px);
+  max-height: min(560px, calc(100vh - 16px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 14px 16px 12px;
+  border-radius: 16px;
+  background: var(--rk-bg);
+  border: 1px solid var(--rk-border);
+  box-shadow: var(--rk-shadow);
+  animation: rk-in 160ms ease-out;
+}
+
+.rk-pop:focus {
+  outline: none;
+}
+
+.rk-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rk-head__text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+}
+
+.rk-head h2 {
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.3;
+  color: var(--rk-text);
+}
+
+.rk-summary {
+  margin-top: 10px;
+  color: var(--rk-text);
+}
+
+.rk-pop__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 10px;
+}
+
+/* ---------- Gmail banner ---------- */
+
+.rk-banner {
+  position: relative;
+  margin: 0 0 14px;
+  padding: 14px 16px 12px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--rk-border);
+  background: var(--rk-bg);
+  box-shadow: 0 6px 18px rgba(11, 16, 32, 0.08);
+  overflow: hidden;
+  animation: rk-in 180ms ease-out;
+}
+
+.rk-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--rk-caution);
+}
+
+.rk-banner.rk-sev-high::before {
+  background: var(--rk-danger);
+}
+
+.rk-banner.rk-sev-critical::before {
+  background: var(--rk-critical);
+}
+
+.rk-banner.rk-sev-low::before {
+  background: var(--rk-indigo);
+}
+
+.rk-banner__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--rk-muted);
+}
+
+.rk-banner__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.rk-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.rk-banner__details {
+  margin-top: 4px;
+}
+
+.rk-banner__details[hidden] {
+  display: none;
+}
+
+/* ---------- link tooltip ---------- */
+
+.rk-tip {
+  position: fixed;
+  z-index: 2147483646;
+  max-width: min(320px, calc(100vw - 16px));
+  padding: 9px 12px 10px;
+  border-radius: 12px;
+  background: var(--rk-bg);
+  border: 1px solid var(--rk-border);
+  box-shadow: var(--rk-shadow);
+  pointer-events: none;
+  animation: rk-in 140ms ease-out;
+}
+
+.rk-tip__label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--rk-muted);
+}
+
+:host([lang='hi']) .rk-tip__label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11.5px;
+}
+
+.rk-tip__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.rk-tip__host {
+  margin-top: 3px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  color: var(--rk-muted);
+  overflow-wrap: anywhere;
+}
+
+.rk-tip__reason {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--rk-text);
+}
+
+.rk-tip--official .rk-tip__title {
+  color: var(--rk-safe-text);
+}
+
+.rk-tip--safe .rk-tip__title {
+  color: var(--rk-text);
+}
+
+.rk-tip--caution .rk-tip__title {
+  color: var(--rk-caution-text);
+}
+
+.rk-tip--danger {
+  border-color: rgba(225, 29, 72, 0.5);
+}
+
+.rk-tip--danger .rk-tip__title {
+  color: var(--rk-danger-text);
+}
+
+.rk-tip--upi .rk-tip__title {
+  color: var(--rk-danger-text);
+}
+
+/* ---------- modal (UPI confirmation) ---------- */
+
+.rk-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(11, 16, 32, 0.55);
+  animation: rk-fade 140ms ease-out;
+}
+
+.rk-modal {
+  width: min(440px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 20px 22px 18px;
+  border-radius: 18px;
+  background: var(--rk-bg);
+  border: 1px solid var(--rk-border);
+  box-shadow: var(--rk-shadow);
+  animation: rk-in 180ms ease-out;
+}
+
+.rk-modal:focus {
+  outline: none;
+}
+
+.rk-modal__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--rk-danger-tint);
+  color: var(--rk-danger-text);
+}
+
+.rk-modal__icon .rk-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.rk-modal h2 {
+  margin-top: 12px;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.rk-modal p {
+  margin-top: 8px;
+  color: var(--rk-muted);
+}
+
+.rk-upi {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--rk-surface);
+  border: 1px solid var(--rk-border);
+}
+
+.rk-upi dt {
+  color: var(--rk-muted);
+  font-size: 12.5px;
+}
+
+.rk-upi dd {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.rk-upi__amount {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.rk-modal .rk-actions {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+/* ---------- lookalike interstitial ---------- */
+
+.rk-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: 24px 16px;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(225, 29, 72, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 100% 110%, rgba(255, 122, 26, 0.1), transparent 60%),
+    var(--rk-surface);
+  color: var(--rk-text);
+  animation: rk-fade 160ms ease-out;
+}
+
+:host([data-theme='dark']) .rk-gate {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(225, 29, 72, 0.28), transparent 60%),
+    radial-gradient(900px 500px at 100% 110%, rgba(255, 122, 26, 0.16), transparent 60%),
+    var(--rk-surface);
+}
+
+.rk-gate__card {
+  width: min(620px, 100%);
+  padding: 32px 32px 26px;
+  border-radius: 24px;
+  background: var(--rk-bg);
+  border: 1px solid var(--rk-border);
+  box-shadow: var(--rk-shadow);
+  animation: rk-in 220ms ease-out;
+}
+
+.rk-gate__card:focus {
+  outline: none;
+}
+
+.rk-gate__mark {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.rk-gate__mark svg {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.rk-gate__mark::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--rk-danger);
+  animation: rk-pulse 1.6s ease-out infinite;
+}
+
+.rk-gate__eyebrow {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rk-danger-text);
+}
+
+:host([lang='hi']) .rk-gate__eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+}
+
+.rk-gate h1 {
+  margin-top: 6px;
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.15;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.rk-gate__body {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--rk-text);
+}
+
+.rk-gate__host {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--rk-danger-tint);
+  color: var(--rk-danger-text);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.92em;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.rk-gate__real {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--rk-safe-tint);
+  color: var(--rk-text);
+  font-size: 14px;
+}
+
+.rk-gate__real .rk-icon {
+  color: var(--rk-safe-text);
+}
+
+.rk-gate__real a {
+  color: var(--rk-safe-text);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.rk-gate__reasons {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--rk-surface);
+  border: 1px solid var(--rk-border);
+}
+
+.rk-gate__reasons li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.rk-gate__reasons .rk-icon {
+  margin-top: 2px;
+  width: 15px;
+  height: 15px;
+  color: var(--rk-danger-text);
+}
+
+.rk-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 22px;
+}
+
+.rk-gate__actions .rk-btn--primary {
+  min-height: 44px;
+  padding: 10px 20px;
+  font-size: 15px;
+}
+
+.rk-gate__note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--rk-muted);
+}
+
+.rk-gate__help {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rk-border);
+  font-size: 13px;
+  color: var(--rk-muted);
+}
+
+.rk-gate__help a {
+  color: var(--rk-text);
+  font-weight: 650;
+}
+
+.rk-gate__brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--rk-muted);
+}
+
+@media (max-width: 520px) {
+  .rk-gate__card {
+    padding: 24px 20px 20px;
+  }
+  .rk-gate__actions .rk-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

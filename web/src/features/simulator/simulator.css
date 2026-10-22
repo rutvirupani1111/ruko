@@ -1,0 +1,252 @@
+/*
+ * Phone mock-ups for Spot the scam. Each app has its own palette as CSS
+ * variables, with dark-mode values and an elder (high contrast) override.
+ * The apps are generic look-alikes: no real logos or trademarks.
+ */
+
+.phone {
+  --frame: #0b1020;
+  --island: #000;
+  --status: #0b1020;
+}
+.dark .phone {
+  --frame: #2a3352;
+}
+
+.mock-wa {
+  --top: #008069;
+  --top-fg: #ffffff;
+  --top-sub: rgb(255 255 255 / 0.8);
+  --chat: #efeae2;
+  --dots: rgb(11 16 32 / 0.05);
+  --in: #ffffff;
+  --in-fg: #111b21;
+  --meta: #667781;
+  --sys: #fff6cf;
+  --sys-fg: #54656f;
+  --link: #027eb5;
+  --author: #c2410c;
+  --bar: #f0f2f5;
+  --field: #ffffff;
+  --send: #00a884;
+}
+.dark .mock-wa {
+  --top: #1f2c34;
+  --top-fg: #e9edef;
+  --top-sub: #8696a0;
+  --chat: #0b141a;
+  --dots: rgb(255 255 255 / 0.035);
+  --in: #202c33;
+  --in-fg: #e9edef;
+  --meta: #8696a0;
+  --sys: #182229;
+  --sys-fg: #ffd279;
+  --link: #53bdeb;
+  --author: #ff9a5c;
+  --bar: #1f2c34;
+  --field: #2a3942;
+  --send: #00a884;
+}
+
+.mock-sms {
+  --top: #ffffff;
+  --top-fg: #1f1f1f;
+  --top-sub: #5f6368;
+  --chat: #ffffff;
+  --in: #e8eef7;
+  --in-fg: #1f1f1f;
+  --meta: #5f6368;
+  --link: #0b57d0;
+  --bar: #ffffff;
+  --field: #eef1f6;
+  --send: #0b57d0;
+}
+.dark .mock-sms {
+  --top: #131416;
+  --top-fg: #e3e3e3;
+  --top-sub: #a8abb0;
+  --chat: #131416;
+  --in: #2b2f36;
+  --in-fg: #e3e3e3;
+  --meta: #a8abb0;
+  --link: #a8c7fa;
+  --bar: #131416;
+  --field: #24272c;
+  --send: #a8c7fa;
+}
+
+.mock-mail {
+  --top: #ffffff;
+  --top-fg: #1f1f1f;
+  --top-sub: #5f6368;
+  --chat: #ffffff;
+  --meta: #5f6368;
+  --link: #0b57d0;
+  --cta: #0b57d0;
+  --cta-fg: #ffffff;
+  --chip: #f1f3f4;
+  --line: #e3e3e3;
+}
+.dark .mock-mail {
+  --top: #1b1b1f;
+  --top-fg: #e3e3e3;
+  --top-sub: #a8abb0;
+  --chat: #1b1b1f;
+  --meta: #a8abb0;
+  --link: #a8c7fa;
+  --cta: #a8c7fa;
+  --cta-fg: #062e6f;
+  --chip: #2b2b30;
+  --line: #34343a;
+}
+
+.mock-call {
+  --chat: linear-gradient(180deg, #172036 0%, #0d1324 60%, #0b1020 100%);
+  --top-fg: #f4f1ea;
+  --top-sub: #aab3c8;
+  --in: rgb(255 255 255 / 0.1);
+  --in-fg: #f4f1ea;
+  --out: #1f6f53;
+  --out-fg: #f4f1ea;
+  --meta: #aab3c8;
+}
+
+.mock-pay {
+  --top: #4a2a8c;
+  --top-fg: #ffffff;
+  --top-sub: rgb(255 255 255 / 0.78);
+  --chat: #f4f1fa;
+  --card: #ffffff;
+  --card-fg: #1d1530;
+  --meta: #6b6280;
+  --accent: #4a2a8c;
+  --accent-fg: #ffffff;
+  --note: #f0ebfa;
+}
+.dark .mock-pay {
+  --top: #2a1a52;
+  --chat: #120d1f;
+  --card: #1d1630;
+  --card-fg: #f1ecfb;
+  --meta: #b6abd0;
+  --accent: #9b7bea;
+  --accent-fg: #120d1f;
+  --note: #2a2142;
+}
+
+/* Elder mode: high contrast, no tinted chat wallpapers, thick outlines. */
+.elder .mock-wa,
+.elder .mock-sms,
+.elder .mock-mail,
+.elder .mock-pay {
+  --top: #000000;
+  --top-fg: #ffffff;
+  --top-sub: #ffffff;
+  --chat: #ffffff;
+  --dots: transparent;
+  --in: #ffffff;
+  --in-fg: #000000;
+  --meta: #1f1f1f;
+  --sys: #ffffff;
+  --sys-fg: #000000;
+  --link: #0033cc;
+  --author: #000000;
+  --bar: #ffffff;
+  --field: #ffffff;
+  --card: #ffffff;
+  --card-fg: #000000;
+  --note: #ffffff;
+  --accent: #000000;
+  --accent-fg: #ffffff;
+  --cta: #000000;
+  --cta-fg: #ffffff;
+  --chip: #ffffff;
+  --line: #000000;
+}
+.elder .mock-call {
+  --chat: #000000;
+  --in: #000000;
+  --out: #000000;
+  --meta: #ffffff;
+  --top-sub: #ffffff;
+}
+.elder .bubble {
+  border: 2px solid currentColor;
+  box-shadow: none !important;
+}
+.elder .bubble::before {
+  display: none;
+}
+.elder .phone-screen {
+  font-size: 1.22rem;
+  line-height: 1.55;
+}
+
+.wa-wallpaper {
+  background-color: var(--chat);
+  background-image:
+    radial-gradient(var(--dots) 1.2px, transparent 1.3px),
+    radial-gradient(var(--dots) 1.2px, transparent 1.3px);
+  background-size: 22px 22px;
+  background-position: 0 0, 11px 11px;
+}
+
+/* Incoming bubble tail (top-left), like most chat apps. */
+.bubble-tail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -7px;
+  width: 8px;
+  height: 13px;
+  background: var(--in);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+.bubble-tail-out::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -7px;
+  width: 8px;
+  height: 13px;
+  background: var(--out, #d9fdd3);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* Flag number badge after a highlighted phrase. */
+.flag-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15em;
+  height: 1.15em;
+  margin-left: 0.2em;
+  border-radius: 999px;
+  font-size: 0.68em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: 0.35em;
+  font-family: var(--font-sans);
+  color: #fff;
+  background: var(--danger-bg);
+}
+.flag-n-safe {
+  color: #0b1020;
+  background: var(--safe-bg);
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.pop-in {
+  animation: pop-in 260ms var(--ease-snappy) both;
+}
