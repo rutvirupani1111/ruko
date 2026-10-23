@@ -21,7 +21,7 @@ import { Button, ButtonLink, ButtonRouterLink } from '@/components/ui/Button';
 import { config } from '@/config';
 import { CATEGORY_ORDER } from '@/data/categories';
 import { common } from '@/i18n/common';
-import { baseLocale, pick, useLocale, useT, type BaseLocale } from '@/i18n/core';
+import { LOCALE_NAMES, LOCALES, baseLocale, loadLocale, pick, useLocale, useT, type Locale } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { PREF, readJson, writeJson } from '@/lib/storage';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
@@ -215,7 +215,7 @@ const CONTACT_KEYS = ['call', 'sms', 'whatsapp', 'email', 'web', 'social', 'othe
 const PAYMENT_KEYS = ['upi', 'debit', 'credit', 'netbanking', 'wallet', 'other'] as const;
 
 interface FormState {
-  lang: BaseLocale;
+  lang: Locale;
   name: string;
   mobile: string;
   email: string;
@@ -240,7 +240,7 @@ interface FormState {
 
 const blankTx = (): Transaction => ({ at: '', amount: '', reference: '', from: '', to: '' });
 
-function initialForm(lang: BaseLocale): FormState {
+function initialForm(lang: Locale): FormState {
   const base = emptyComplaint(lang);
   return {
     lang,
@@ -271,12 +271,12 @@ function ComplaintGenerator() {
   const { locale } = useLocale();
   const ui = useT(helpStrings).form;
   const id = useId().replace(/:/g, '');
-  const [form, setForm] = useState<FormState>(() => initialForm(baseLocale(locale)));
+  const [form, setForm] = useState<FormState>(() => initialForm(locale));
   const [copied, setCopied] = useState(false);
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }));
 
   // Labels inside the complaint follow the complaint's language, not the page's.
-  const out = helpStrings[form.lang].form;
+  const out = pick(helpStrings, form.lang).form;
   const categories = useMemo(
     () =>
       CATEGORY_ORDER.map((cid) => CATEGORIES[cid])
@@ -295,7 +295,7 @@ function ComplaintGenerator() {
     state: form.state,
     category: (() => {
       const cat = categories.find((x) => x.id === form.category);
-      return cat ? (form.lang === 'hi' ? cat.hi : cat.en) : '';
+      return cat ? (baseLocale(form.lang) === 'hi' ? cat.hi : cat.en) : '';
     })(),
     contactMode: form.contact ? out.contactPhrase[form.contact as (typeof CONTACT_KEYS)[number]] : '',
     incidentAt: form.incidentAt,
@@ -381,7 +381,7 @@ function ComplaintGenerator() {
           <fieldset>
             <legend className="mb-2 text-sm font-semibold">{ui.language}</legend>
             <div className="inline-flex rounded-full border border-line-strong bg-surface p-0.5">
-              {(['en', 'hi'] as const).map((l) => (
+              {LOCALES.map((l) => (
                 <label
                   key={l}
                   className={cn(
@@ -390,8 +390,8 @@ function ComplaintGenerator() {
                   )}
                   lang={l}
                 >
-                  <input type="radio" name={`${id}-lang`} value={l} checked={form.lang === l} onChange={() => set('lang', l)} className="sr-only" />
-                  {l === 'en' ? 'English' : 'हिंदी'}
+                  <input type="radio" name={`${id}-lang`} value={l} checked={form.lang === l} onChange={() => void loadLocale(l).catch(() => undefined).then(() => set('lang', l))} className="sr-only" />
+                  {LOCALE_NAMES[l]}
                 </label>
               ))}
             </div>

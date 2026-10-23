@@ -1,4 +1,5 @@
-import type { BaseLocale as Locale } from '@/i18n/core';
+import type { Locale } from '@/i18n/core';
+import { LETTERS } from './letters';
 
 /**
  * Builds a neatly formatted police / cyber cell complaint from the form.
@@ -68,7 +69,8 @@ export const emptyComplaint = (lang: Locale): ComplaintData => ({
 
 const BLANK = '__________';
 
-const tag = (lang: Locale) => (lang === 'hi' ? 'hi-IN' : 'en-IN');
+/** Western digits in every language (Marathi would otherwise default to Devanagari digits). */
+const tag = (lang: Locale) => `${lang}-IN-u-nu-latn`;
 
 export function formatDateTime(value: string, lang: Locale): { date: string; time: string } {
   if (!value) return { date: '', time: '' };
@@ -107,6 +109,51 @@ export function formatComplaint(d: ComplaintData, today = new Date()): string {
   const suspects = lines(d.suspects);
   const txns = d.transactions.filter((t) => t.amount.trim() || t.reference.trim() || t.to.trim() || t.at.trim());
   const out: string[] = [];
+
+  if (d.lang === 'gu' || d.lang === 'mr') {
+    const L = LETTERS[d.lang];
+    out.push(...L.to, or(place), '');
+    out.push(L.subject(d.category, amount, incident.date), '');
+    out.push(L.salutation, '');
+    out.push(L.intro(or(d.name), or(fullAddress)), '');
+    out.push(L.happened);
+    if (d.description.trim()) out.push(d.description.trim());
+    if (incident.date || d.contactMode) out.push(L.contacted(d.contactMode, incident.date, incident.time));
+    out.push('');
+    out.push(L.lost);
+    out.push(`${L.total}: ${amount || BLANK}${d.paymentMode ? ` (${d.paymentMode})` : ''}`);
+    if (txns.length) {
+      out.push(L.transactions);
+      txns.forEach((t, i) => {
+        const when = formatDateTime(t.at, d.lang);
+        const parts = [
+          when.date ? `${when.date}${when.time ? `, ${when.time}` : ''}` : '',
+          t.amount.trim() ? formatAmount(t.amount, d.lang) : '',
+          t.reference.trim() ? `${L.txnId}: ${t.reference.trim()}` : '',
+          t.from.trim() ? `${L.from}: ${t.from.trim()}` : '',
+          t.to.trim() ? `${L.sentTo}: ${t.to.trim()}` : '',
+        ].filter(Boolean);
+        out.push(`   ${i + 1}) ${parts.join(', ')}`);
+      });
+    }
+    out.push('');
+    if (suspects.length) {
+      out.push(`3. ${L.fraudster}`);
+      suspects.forEach((s) => out.push(`   - ${s}`));
+      out.push('');
+    }
+    const steps: string[] = [];
+    if (d.called1930) steps.push(`   - ${L.called1930(d.ack1930.trim())}`);
+    if (d.reportedOnline) steps.push(`   - ${L.reportedOnline(d.ackOnline.trim())}`);
+    if (d.informedBank) steps.push(`   - ${L.informedBank(d.bankRef.trim())}`);
+    if (steps.length) out.push(`${suspects.length ? 4 : 3}. ${L.steps}`, ...steps, '');
+    out.push(L.request, '');
+    out.push(L.enclosures, '');
+    out.push(L.signoff, or(d.name), `${L.mobile}: ${or(d.mobile)}`);
+    if (d.email.trim()) out.push(`${L.email}: ${d.email.trim()}`);
+    out.push(`${L.date}: ${todayText}`);
+    return out.join('\n');
+  }
 
   if (hi) {
     out.push('सेवा में,', 'थाना प्रभारी / साइबर क्राइम सेल,', or(place), '');
