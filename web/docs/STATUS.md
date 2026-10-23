@@ -4,7 +4,7 @@ Last updated: 2026-10-23, end of overnight session 2. Live at https://ruko-nu.ve
 
 ## Verified at the end of this session
 - `npm run typecheck`: passes (app + node configs, including `e2e/` and `playwright.config.ts`).
-- `npm test`: 34 vitest tests pass (PoW on the engine's `sha256HexSync` vs WebCrypto, report input
+- `npm test`: 59 vitest tests pass (34 before session 3) (PoW on the engine's `sha256HexSync` vs WebCrypto, report input
   rules, scenarios, complaint draft, 12 API tests on PGlite including a full-difficulty proof from
   the browser solver).
 - `npm run build`: passes. Initial JS **133.2 KB gzip** (budget 150). PoW worker chunk 1.2 KB
@@ -19,7 +19,8 @@ Last updated: 2026-10-23, end of overnight session 2. Live at https://ruko-nu.ve
   `mr.ts`, each split into `-core` and `-pages` halves) and fall back to the base language.
   `main.tsx` loads the bundle before first render; `setLocale` loads before switching (no flash).
 - `baseLocale()`: Marathi -> Hindi, Gujarati -> English for everything the engine writes, the
-  simulator scenarios, sample messages, Learn category content and the complaint draft language.
+  simulator scenarios, sample messages and Learn category content. The complaint draft has its own
+  gu/mr letters (`src/features/help/letters.ts`).
   Notes on the verdict card and simulator say which language that text is in.
 - Chrome built-in Translator: translation source is now the verdict's language (it used the UI
   locale), and gu/mr readers get a one-tap "Translate into ગુજરાતી/मराठी" button.
