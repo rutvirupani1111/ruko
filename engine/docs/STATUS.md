@@ -1,8 +1,25 @@
 # @ruko/engine status
 
 Progress log for the engine build. A continuation session should resume from "Next".
-Last updated: 2026-10-23, rule pass for the 6 corpus misses (v0.1.3). All checks green;
-`npm run size` still exits 1 because `analyze()` alone is over its 70 KB budget.
+Last updated: 2026-10-23, size pass (v0.1.4, see the 0.1.4 notes below). All checks green
+(typecheck, 34/34 tests); `npm run size` still exits 1 because `analyze()` alone (81.4 KB) is over
+its 70 KB budget.
+
+### 0.1.4 size pass (this session)
+
+- Hindi message table stored as an ordered array (keys once): analyze 81.9 -> 81.5 KB gz.
+- Brand registry packed as one `|`-separated line per brand: 81.5 -> 81.4 KB gz.
+- Verified with a full output dump (628 corpus verdict objects in en + hi, CATEGORIES, analyzeUrl /
+  analyzeUpiId / analyzePhone probes, isOfficialHost / officialDomainsFor, identifierHash,
+  sha256HexSync): byte-identical to 0.1.3. Recall 188/188, false positives 0/126.
+- `money_req` "bhejo" fix tried (put `bhej` after the longer forms): changes 6 corpus verdicts
+  (lot-hl-1, loan-hl-2, sex-hl-2, gov-hl-1, imp-hl-2, rom-hl-1), so reverted and still open.
+- Per-module minified bytes in analyze() before this pass (`npm run size -- --modules`): i18n/hi
+  26.0 K, rules/shared 21.7 K, domains/brands 17.5 K, analyze 13.3 K, i18n/en 12.7 K,
+  rules/digital_arrest 10.5 K, shorts 9.1 K. Re-encoding Devanagari as 2-byte chars measured only
+  -1.7 KB gz; a 1-byte encoding (not possible in UTF-8 source) is the ceiling at -4.1 KB.
+- Remaining gap to 70 KB is ~11.4 KB: the rule patterns (shared fragment factoring) and rule texts
+  are where it has to come from; see "Next".
 
 ## Done
 
@@ -83,7 +100,7 @@ Last updated: 2026-10-23, rule pass for the 6 corpus misses (v0.1.3). All checks
 | --- | --- | --- | --- | --- | --- |
 | `identifierHash` only | 84.8 KB | 4.8 KB | 5.0 KB (5,116 B) | 5.0 KB (hash code untouched) | <= 5 KB, met |
 | `analyzeUrl` only | (not measured) | 22.8 KB | 22.8 KB | 22.8 KB | |
-| `analyze` only | 99.0 KB | 80.4 KB | 80.4 KB | 81.9 KB | <= 70 KB, **not met** |
+| `analyze` only | 99.0 KB | 80.4 KB | 80.4 KB | 81.9 KB (0.1.4: 81.4 KB) | <= 70 KB, **not met** |
 | `CATEGORIES` / categories entry | 70.3 KB | 21.0 KB | 21.0 KB | 21.0 KB | |
 | full bundle (`export *`) | 101.1 KB | 100.3 KB | 100.6 KB | 101.9 KB | (old 60 KB target, not met) |
 
@@ -95,7 +112,7 @@ dropping the per-rule `cat` field measured 0.4 KB.
 
 ## Not done / known issues
 
-- `analyze()` alone is 81.9 KB, 11.9 KB over the 70 KB budget (see breakdown above; the 0.1.3
+- `analyze()` alone is 81.4 KB (0.1.4), 11.4 KB over the 70 KB budget (see breakdown above; the 0.1.3
   rules added 1.5 KB, mostly Hindi rule texts).
 - No corpus misses left, so recall is no longer a useful signal on this corpus: grow it with
   fresh scams and more genuine look-alikes before trusting further rule changes.
