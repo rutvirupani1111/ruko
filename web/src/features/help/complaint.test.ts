@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { emptyComplaint, formatAmount, formatComplaint, type ComplaintData } from './complaint';
 
-const filled = (lang: 'en' | 'hi'): ComplaintData => ({
+const filled = (lang: ComplaintData['lang']): ComplaintData => ({
   ...emptyComplaint(lang),
   name: 'Sunita Verma',
   mobile: '98765 43210',
@@ -59,5 +59,18 @@ describe('complaint draft', () => {
     expect(text).not.toContain('Transactions:');
     expect(text).not.toContain("Fraudster's details");
     expect(text).not.toContain('Steps I have already taken');
+  });
+
+  it.each([
+    ['gu', 'ઓનલાઇન નાણાકીય છેતરપિંડી', '1. ઘટનાની વિગત', 'રાષ્ટ્રીય સાયબર ક્રાઇમ હેલ્પલાઇન 1930'],
+    ['mr', 'ऑनलाइन आर्थिक फसवणुकीबाबत तक्रार', '1. घटनेचा तपशील', 'राष्ट्रीय सायबर क्राइम हेल्पलाइन 1930'],
+  ] as const)('writes the %s letter with native headings and Western digits', (lang, subject, heading, helpline) => {
+    const text = formatComplaint(filled(lang), new Date('2026-10-23T10:00:00'));
+    expect(text).toContain(subject);
+    expect(text).toContain(heading);
+    expect(text).toContain(helpline);
+    expect(text).toContain('₹25,000');
+    expect(text).toContain('Sunita Verma');
+    expect(text).not.toMatch(/[०-९]/);
   });
 });
