@@ -22,7 +22,7 @@ import { Mark } from '@/components/brand/Mark';
 import { Button } from '@/components/ui/Button';
 import { config } from '@/config';
 import { common } from '@/i18n/common';
-import { formatNumber, useLocale, useT, type Locale } from '@/i18n/core';
+import { baseLocale, formatNumber, useLocale, useT, type Locale } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { useSpeech } from '@/lib/speech';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
@@ -57,7 +57,7 @@ export default function SimulatorPage() {
   const { locale } = useLocale();
   useDocumentTitle(t.title);
   const reduce = useReducedMotion();
-  const speech = useSpeech(locale);
+  const speech = useSpeech(baseLocale(locale));
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [level, setLevel] = useState<Level>(1);
@@ -506,7 +506,7 @@ function Feedback({
         </div>
         {category ? (
           <Link to={`/learn/${scenario.category}`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent underline-offset-4 hover:underline">
-            {t.learnAbout}: {locale === 'hi' ? category.nameHi : category.name}
+            {t.learnAbout}: {baseLocale(locale) === 'hi' ? category.nameHi : category.name}
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         ) : null}
@@ -574,7 +574,7 @@ function Summary({
         bullets: [`${t.levelLabel(level)}: ${t.levels[level].name}`, t.finalScore(score), t.bestStreak(bestStreak)],
         tagline: c.brand.tagline,
         footer: `${config.siteUrl.replace(/^https?:\/\//, '')}/simulator`,
-        hindi: locale === 'hi',
+        hindi: baseLocale(locale) === 'hi',
       });
       const outcome = await shareImage(blob, 'ruko-spot-the-scam.png', t.shareText(correct, total, `${config.siteUrl}/simulator`), 'Ruko');
       setShareState(outcome === 'shared' ? 'shared' : outcome === 'downloaded' ? 'saved' : 'idle');

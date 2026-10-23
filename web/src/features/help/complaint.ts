@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n/core';
+import type { BaseLocale as Locale } from '@/i18n/core';
 
 /**
  * Builds a neatly formatted police / cyber cell complaint from the form.

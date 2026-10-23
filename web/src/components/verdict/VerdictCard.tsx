@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { config } from '@/config';
 import { checkStrings } from '@/features/check/strings';
 import { common } from '@/i18n/common';
-import { useLocale, useT } from '@/i18n/core';
+import { baseLocale, useLocale, useT } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { reportablesFrom } from '@/lib/community';
 import { useSpeech } from '@/lib/speech';
@@ -48,7 +48,9 @@ export function VerdictCard({ verdict, text, categoryName, apiEnabled = false, o
   const { locale } = useLocale();
   const idPrefix = useId().replace(/:/g, '');
   const community = useCommunity(verdict.entities);
-  const speech = useSpeech(locale);
+  // The verdict is written in the base language (Gujarati readers get English, Marathi readers Hindi).
+  const contentLang = baseLocale(locale);
+  const speech = useSpeech(contentLang);
   const [shareState, setShareState] = useState<'idle' | 'busy' | 'shared' | 'saved' | 'failed'>('idle');
 
   const flags = useMemo(() => verdict.signals.filter((s) => s.weight > 0), [verdict.signals]);
@@ -75,7 +77,7 @@ export function VerdictCard({ verdict, text, categoryName, apiEnabled = false, o
       const { renderCard, shareImage } = await import('@/lib/shareCard');
       const blob = await renderCard({
         kind: 'warning',
-        eyebrow: locale === 'hi' ? 'चेतावनी' : 'WARNING',
+        eyebrow: contentLang === 'hi' ? 'चेतावनी' : 'WARNING',
         title: verdict.headline,
         score: verdict.score,
         severity: verdict.severity,
@@ -84,7 +86,7 @@ export function VerdictCard({ verdict, text, categoryName, apiEnabled = false, o
         bullets: flags.slice(0, 3).map((s) => s.title),
         tagline: c.brand.tagline,
         footer: config.siteUrl.replace(/^https?:\/\//, ''),
-        hindi: locale === 'hi',
+        hindi: contentLang === 'hi',
       });
       const outcome = await shareImage(blob, 'ruko-warning.png', t.actions.shareText(verdict.headline, config.siteUrl), 'Ruko');
       setShareState(outcome === 'shared' ? 'shared' : outcome === 'downloaded' ? 'saved' : 'idle');

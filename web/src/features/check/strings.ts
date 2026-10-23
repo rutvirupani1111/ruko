@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const checkStrings = defineStrings(
+  'check',
   {
     title: 'Ruko: check a message, link, UPI ID or number for scams',
     hero: {

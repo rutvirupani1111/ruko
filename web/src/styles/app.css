@@ -10,9 +10,10 @@
 /* ------------------------------------------------------------------ */
 
 @theme inline {
-  --font-display: 'Bricolage Grotesque Variable', 'Mukta', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Inter Variable', 'Mukta', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Mukta', 'Noto Sans Gujarati', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Mukta', 'Noto Sans Gujarati', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
   --font-deva: 'Mukta', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-gujr: 'Noto Sans Gujarati', 'Inter Variable', 'Mukta', ui-sans-serif, system-ui, sans-serif;
 
   --color-ink: #0b1020;
   --color-paper: #fbf8f2;
@@ -189,8 +190,12 @@
     z-index: 1;
   }
 
-  html:lang(hi) body {
+  html:lang(hi) body,
+  html:lang(mr) body {
     font-family: var(--font-deva);
+  }
+  html:lang(gu) body {
+    font-family: var(--font-gujr);
   }
 
   ::selection {
@@ -242,7 +247,11 @@
     font-variation-settings: 'wdth' 100;
   }
   :lang(hi) .display,
-  .display:lang(hi) {
+  .display:lang(hi),
+  :lang(mr) .display,
+  .display:lang(mr),
+  :lang(gu) .display,
+  .display:lang(gu) {
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.28;

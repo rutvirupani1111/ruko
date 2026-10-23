@@ -34,6 +34,8 @@
     <meta property="og:image:alt" content="Ruko shield logo with the words Pause. Check. Then trust." />
     <meta property="og:locale" content="en_IN" />
     <meta property="og:locale:alternate" content="hi_IN" />
+    <meta property="og:locale:alternate" content="gu_IN" />
+    <meta property="og:locale:alternate" content="mr_IN" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Ruko: Pause. Check. Then trust." />
     <meta name="twitter:description" content="India's on-device scam shield. Nothing you paste leaves your phone." />
@@ -46,7 +48,10 @@
         try {
           var d = document.documentElement;
           var l = localStorage.getItem('ruko.locale');
-          if (l !== 'en' && l !== 'hi') l = (navigator.language || '').toLowerCase().indexOf('hi') === 0 ? 'hi' : 'en';
+          if (l !== 'en' && l !== 'hi' && l !== 'gu' && l !== 'mr') {
+            l = (navigator.language || '').toLowerCase().slice(0, 2);
+            if (l !== 'hi' && l !== 'gu' && l !== 'mr') l = 'en';
+          }
           d.lang = l;
           var t = localStorage.getItem('ruko.theme');
           var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);

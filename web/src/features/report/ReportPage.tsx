@@ -24,7 +24,7 @@ import { Button, ButtonLink, ButtonRouterLink } from '@/components/ui/Button';
 import { apiEnabled, config } from '@/config';
 import { CATEGORY_ORDER } from '@/data/categories';
 import { common } from '@/i18n/common';
-import { bcp47, formatNumber, useLocale, useT } from '@/i18n/core';
+import { baseLocale, formatNumber, numberFormat, useLocale, useT } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { COMMUNITY_THRESHOLD, POW_DIFFICULTY, submitReport, type ReportError } from '@/lib/community';
 import { powProgress } from '@/lib/pow';
@@ -95,7 +95,7 @@ function ReportCard() {
     () =>
       CATEGORY_ORDER.map((cid) => CATEGORIES[cid])
         .filter(Boolean)
-        .map((info) => ({ id: info.id, name: locale === 'hi' ? info.nameHi : info.name, short: locale === 'hi' ? info.shortHi : info.short })),
+        .map((info) => ({ id: info.id, name: baseLocale(locale) === 'hi' ? info.nameHi : info.name, short: baseLocale(locale) === 'hi' ? info.shortHi : info.short })),
     [locale],
   );
   const selected = categories.find((x) => x.id === category);
@@ -178,7 +178,7 @@ function ReportCard() {
 
   if (phase === 'working') {
     const progress = stage === 'hashing' ? 0.03 : stage === 'sending' ? 0.98 : 0.05 + 0.92 * powProgress(tries, POW_DIFFICULTY);
-    const percent = new Intl.NumberFormat(bcp47(locale), { style: 'percent', maximumFractionDigits: 0 }).format(progress);
+    const percent = numberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(progress);
     return (
       <Card>
         <div role="status" aria-live="polite" data-testid="report-working" data-stage={stage}>

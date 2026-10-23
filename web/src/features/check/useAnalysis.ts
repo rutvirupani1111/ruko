@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from 'react';
 import type { Source, Verdict } from '@ruko/engine';
-import type { Locale } from '@/i18n/core';
+import type { BaseLocale } from '@/i18n/core';
 import { loadEngine, useEngine } from '@/lib/engine';
 
 export const MAX_ANALYSED_CHARS = 8000;
@@ -18,7 +18,8 @@ export interface AnalysisState {
 
 interface Options {
   text: string;
-  locale: Locale;
+  /** Language the engine writes the verdict in. */
+  locale: BaseLocale;
   source?: Source;
   sender?: string;
   debounceMs?: number;

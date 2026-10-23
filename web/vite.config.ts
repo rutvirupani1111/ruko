@@ -62,7 +62,7 @@ export default defineConfig(({ mode }) => {
           name: 'Ruko: scam checker for India',
           short_name: 'Ruko',
           description:
-            'Pause. Check. Then trust. Check messages, links, UPI IDs and numbers for scams, privately on your own phone.',
+            'Pause. Check. Then trust. Check messages, links, UPI IDs and numbers for scams, privately on your own phone. In English, हिंदी, ગુજરાતી and मराठी.',
           lang: 'en-IN',
           dir: 'ltr',
           start_url: '/',

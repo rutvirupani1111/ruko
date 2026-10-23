@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const helpStrings = defineStrings(
+  'help',
   {
     title: 'I think I have been scammed',
     eyebrow: 'Help, step by step',

@@ -7,7 +7,7 @@ import { Button, ButtonRouterLink } from '@/components/ui/Button';
 import { VerdictCard } from '@/components/verdict/VerdictCard';
 import { apiEnabled } from '@/config';
 import { common } from '@/i18n/common';
-import { useLocale, useT } from '@/i18n/core';
+import { baseLocale, useLocale, useT } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { reportablesFrom } from '@/lib/community';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
@@ -49,13 +49,13 @@ export default function CheckPage() {
   const verdictRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const analysis = useAnalysis({ text, locale, source, sender });
+  const analysis = useAnalysis({ text, locale: baseLocale(locale), source, sender });
   const { verdict, runNextImmediately } = analysis;
 
   const categoryName = useMemo(() => {
     const cat = verdict?.category;
     const info = cat && analysis.engine ? analysis.engine.CATEGORIES[cat] : undefined;
-    return info ? (locale === 'hi' ? info.nameHi : info.name) : undefined;
+    return info ? (baseLocale(locale) === 'hi' ? info.nameHi : info.name) : undefined;
   }, [verdict?.category, analysis.engine, locale]);
 
   const scrollToVerdict = useCallback(() => {
@@ -149,7 +149,7 @@ export default function CheckPage() {
   };
 
   const pickSample = (sample: Sample) => {
-    setInputNow(sample.text[locale], { source: sample.source, sender: sample.sender, scroll: true });
+    setInputNow(sample.text[baseLocale(locale)], { source: sample.source, sender: sample.sender, scroll: true });
   };
 
   const hasInput = text.trim().length > 0;
@@ -277,7 +277,7 @@ function SampleChips({ onPick }: { onPick: (s: Sample) => void }) {
                 aria-hidden="true"
                 className={cn('size-2 rounded-full', sample.kind === 'scam' ? 'bg-danger-bg' : 'bg-safe-bg')}
               />
-              {sample.label[locale]}
+              {sample.label[baseLocale(locale)]}
             </button>
           </li>
         ))}

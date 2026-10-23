@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const aboutStrings = defineStrings(
+  'about',
   {
     title: 'About Ruko',
     eyebrow: 'About',

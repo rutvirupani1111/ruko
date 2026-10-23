@@ -2,6 +2,7 @@ import { defineStrings } from './core';
 
 /** Shell, navigation and shared copy. Page-specific copy lives next to each page. */
 export const common = defineStrings(
+  'common',
   {
     brand: {
       name: 'Ruko',
@@ -41,6 +42,14 @@ export const common = defineStrings(
       lostMoney: 'Lost money? Call 1930 now',
       helplines: 'Helplines',
       explore: 'Explore',
+      chakshuLink: 'Chakshu (Sanchar Saathi)',
+      ceirLink: 'CEIR: block a lost phone',
+    },
+    contentLanguage: {
+      en: 'Detailed explanation in English',
+      hi: 'Detailed explanation in Hindi',
+      practiceEn: 'Practice messages are in English',
+      practiceHi: 'Practice messages are in Hindi',
     },
     severity: {
       safe: 'Looks safe',
@@ -118,6 +127,14 @@ export const common = defineStrings(
       lostMoney: 'पैसे गए? अभी 1930 पर कॉल करें',
       helplines: 'हेल्पलाइन',
       explore: 'और देखें',
+      chakshuLink: 'चक्षु (संचार साथी)',
+      ceirLink: 'CEIR: खोया फ़ोन ब्लॉक करें',
+    },
+    contentLanguage: {
+      en: 'पूरी जानकारी अंग्रेज़ी में',
+      hi: 'पूरी जानकारी हिंदी में',
+      practiceEn: 'अभ्यास वाले मैसेज अंग्रेज़ी में हैं',
+      practiceHi: 'अभ्यास वाले मैसेज हिंदी में हैं',
     },
     severity: {
       safe: 'सुरक्षित लगता है',
