@@ -23,6 +23,20 @@ import { upiHandleCount } from '../src/entities/upi';
 import * as categoriesEntry from '../src/categories';
 import { getBrands } from '../src/domains/brands';
 import { allCueSources, getRuleSet } from '../src/rules';
+import { en } from '../src/i18n/en';
+import { HI } from '../src/i18n/hi';
+
+describe('i18n tables', () => {
+  it('has one Hindi string per English key, in the same order', () => {
+    expect(HI.length).toBe(Object.keys(en).length);
+    for (const s of HI) expect(s.length > 0 || s === '').toBe(true);
+    // Placeholders line up key by key, which catches a shifted line.
+    Object.keys(en).forEach((k, i) => {
+      const ph = (s: string) => (s.match(/\{\w+\}/g) ?? []).sort().join();
+      expect(ph(HI[i] as string), k).toBe(ph(en[k as keyof typeof en]));
+    });
+  });
+});
 
 describe('urls and lookalikes', () => {
   it('recognises official domains', () => {
