@@ -132,10 +132,25 @@ export function VerdictCard({ verdict, text, categoryName, apiEnabled = false, o
           />
           <div className="w-full min-w-0 text-left">
             <SeverityChip severity={verdict.severity} />
-            <h2 id={`${idPrefix}-headline`} className="display mt-3 text-[1.7rem] text-fg @lg:text-[2.05rem]" data-testid="verdict-headline">
+            <h2
+              id={`${idPrefix}-headline`}
+              lang={contentLang !== locale ? contentLang : undefined}
+              className="display mt-3 text-[1.7rem] text-fg @lg:text-[2.05rem]"
+              data-testid="verdict-headline"
+            >
               {verdict.headline}
             </h2>
-            {verdict.summary ? <p className="mt-2.5 text-[1.02rem] leading-relaxed text-muted">{verdict.summary}</p> : null}
+            {verdict.summary ? (
+              <p lang={contentLang !== locale ? contentLang : undefined} className="mt-2.5 text-[1.02rem] leading-relaxed text-muted">
+                {verdict.summary}
+              </p>
+            ) : null}
+            {contentLang !== locale ? (
+              // Gujarati/Marathi UI: the engine writes in English/Hindi, so say so plainly.
+              <p className="mt-2 text-sm font-semibold text-subtle" data-testid="content-language-note">
+                {contentLang === 'hi' ? c.contentLanguage.hi : c.contentLanguage.en}
+              </p>
+            ) : null}
             {learnable && categoryName ? (
               <Link
                 to={`/learn/${learnable}`}
