@@ -13,6 +13,25 @@ Last updated: 2026-10-23, end of overnight session 2. Live at https://ruko-nu.ve
 - 375px, English and Hindi: no horizontal overflow on any route (checked with a script).
 - All servers I started are stopped (ports 5181/5182 free).
 
+## Done in session 3 (Gujarati and Marathi)
+- `Locale` is now `en | hi | gu | mr` (`src/i18n/core.tsx`). Each `defineStrings(id, en, hi)` names
+  a bundle slot; `pick()`/`useT()` read gu/mr from code-split bundles (`src/i18n/locales/gu.ts`,
+  `mr.ts`, each split into `-core` and `-pages` halves) and fall back to the base language.
+  `main.tsx` loads the bundle before first render; `setLocale` loads before switching (no flash).
+- `baseLocale()`: Marathi -> Hindi, Gujarati -> English for everything the engine writes, the
+  simulator scenarios, sample messages, Learn category content and the complaint draft language.
+  Notes on the verdict card and simulator say which language that text is in.
+- Chrome built-in Translator: translation source is now the verdict's language (it used the UI
+  locale), and gu/mr readers get a one-tap "Translate into ગુજરાતી/मराठी" button.
+- Latin digits forced in `Intl` (`numberFormat()`): `mr-IN` defaults to Devanagari digits.
+- Fonts: `@fontsource/noto-sans-gujarati` 400/600/800 with unicode-range; `html:lang(gu|mr)`
+  font rules; `index.html` boot script and manifest description know gu/mr.
+- Tests: `src/i18n/locales.test.ts` checks every gu/mr slot against the English shape (keys,
+  function arity, array lengths) and its script; fallback and Latin-digit rules.
+- Not done: simulator scenarios in gu/mr (they fall back to English/Hindi, with a visible note);
+  gu/mr Learn category names (engine data, en/hi only); e2e and 375px overflow sweep not re-run
+  for gu/mr. Translations were written by the model, not yet reviewed by native speakers.
+
 ## Done in session 2
 - **/report**: real form. Kind switch (UPI ID, number, link), hand-off chips from the checker's
   "Report this", category picker (engine names + "Something else") with the category summary,
