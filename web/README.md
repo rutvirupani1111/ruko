@@ -2,7 +2,7 @@
 
 **Pause. Check. Then trust.** रुको। जाँचो। फिर भरोसा करो।
 
-An on-device scam checker for India, in English and Hindi. Paste a message, link,
+An on-device scam checker for India, in English, Hindi, Gujarati and Marathi. Paste a message, link,
 UPI ID or phone number and Ruko checks it inside the page, on your own phone.
 
 **Live: https://ruko-nu.vercel.app**
@@ -50,8 +50,16 @@ detection engine is imported from source (`../engine/src`, `@ruko/engine`).
   IP addresses are never stored.
 - **PWA**: installable, works offline (engine, app shell, Learn, simulator), share target,
   icons generated from the SVG mark.
-- English and Hindi everywhere, light and dark themes, WCAG 2.2 AA colour tokens, keyboard
-  reachable, reduced-motion aware. Initial JS about 133 KB gzip (budget 150 KB).
+- English, हिंदी, ગુજરાતી and मराठी interface (EN | हिं | ગુ | मरा switch), light and dark
+  themes, WCAG 2.2 AA colour tokens, keyboard reachable, reduced-motion aware. Initial JS about
+  134 KB gzip (budget 150 KB).
+- **Gujarati and Marathi**: all interface text, lazily loaded (`src/i18n/locales/{gu,mr}.ts`,
+  about 14 KB gzip each, typed against the English trees in `src/i18n/bundle.ts`). The engine
+  writes verdicts in English and Hindi only, so Marathi readers get Hindi (same script) and
+  Gujarati readers get English, with a "Detailed explanation in Hindi/English" note and, where
+  Chrome's built-in Translator exists, a one-tap "Translate into ગુજરાતી/मराठी". Simulator
+  scenarios, sample messages and Learn category content follow the same rule (Hindi for
+  Marathi, English for Gujarati). Fonts: self-hosted Noto Sans Gujarati; Mukta covers Marathi.
 
 ## Commands
 
