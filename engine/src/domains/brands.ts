@@ -22,150 +22,138 @@ export interface Brand {
   sms: string[];
 }
 
-// [id, name, kind, official domains, tokens, SMS headers, Hindi name]
-type Row = [string, string, BrandKind, string, string, string, string?];
-
-const ROWS: Row[] = [
-  // Banks
-  ['sbi', 'SBI', 'bank', 'sbi.co.in sbi.bank.in onlinesbi.sbi onlinesbi.com bank.sbi yonobusiness.sbi sbicard.com sbilife.co.in sbimf.com sbigeneral.in sbisecurities.in sbicaps.com', 'sbi onlinesbi yono statebank sbicard', 'SBIBNK SBIINB SBIPSG CBSSBI ATMSBI SBIOTP SBYONO SBICRD SBIUPI SBMSMS SBIBMS'],
-  ['hdfc', 'HDFC Bank', 'bank', 'hdfcbank.com hdfc.bank.in hdfcbank.bank.in hdfcbank.net hdfc.com hdfclife.com hdfcergo.com hdfcfund.com hdfcsec.com hdfcbk.io payzapp.in hdfcsky.com', 'hdfc hdfcbank payzapp', 'HDFCBK HDFCBN HDFCCC HDFCLI HDFCBP'],
-  ['icici', 'ICICI Bank', 'bank', 'icicibank.com icici.bank.in icicibank.bank.in icicidirect.com iciciprulife.com icicilombard.com icicipruamc.com icicisecurities.com', 'icici icicibank imobile', 'ICICIB ICICIT ICICIO ICICIS ICICIN'],
-  ['axis', 'Axis Bank', 'bank', 'axisbank.com axis.bank.in axisbank.bank.in axisbank.co.in axisdirect.in axismf.com', 'axisbank =axis', 'AXISBK AXISMR AXISBN AXISCC'],
-  ['kotak', 'Kotak Mahindra Bank', 'bank', 'kotak.com kotak.bank.in kotakbank.com kotaksecurities.com kotakmf.com kotaklife.com kotak811.com', 'kotak kotak811', 'KOTAKB KOTAKM KMBLTD'],
-  ['pnb', 'Punjab National Bank', 'bank', 'pnbindia.in pnb.bank.in pnb.co.in netpnb.com pnbnet.in', 'pnb pnbindia netpnb punjabnational', 'PNBSMS PNBNET PNBBNK'],
-  ['bob', 'Bank of Baroda', 'bank', 'bankofbaroda.in bankofbaroda.bank.in bankofbaroda.com bobfinancial.com bobcard.co.in', 'bankofbaroda bob barodampay bobworld', 'BOBTXN BOBSMS BOBCRD BOBFIN'],
-  ['canara', 'Canara Bank', 'bank', 'canarabank.com canarabank.bank.in canarabank.in', 'canarabank =canara', 'CANBNK CNRBNK'],
-  ['union', 'Union Bank of India', 'bank', 'unionbankofindia.co.in unionbankofindia.bank.in unionbankonline.co.in', 'unionbank unionbankofindia', 'UNIONB UBOIIN'],
-  ['yes', 'Yes Bank', 'bank', 'yesbank.in yesbank.bank.in yesbank.com', 'yesbank', 'YESBNK YESBKG'],
-  ['idfc', 'IDFC FIRST Bank', 'bank', 'idfcfirstbank.com idfcfirst.bank.in idfcfirstbank.bank.in', 'idfc idfcfirst', 'IDFCFB IDFCBK'],
-  ['indusind', 'IndusInd Bank', 'bank', 'indusind.com indusind.bank.in', 'indusind', 'INDUSB INDUSL'],
-  ['boi', 'Bank of India', 'bank', 'bankofindia.co.in bankofindia.bank.in bankofindia.com', 'bankofindia', 'BOIIND BOISMS'],
-  ['indianbank', 'Indian Bank', 'bank', 'indianbank.in indianbank.bank.in', 'indianbank', 'INDBNK'],
-  ['iob', 'Indian Overseas Bank', 'bank', 'iob.in iob.bank.in', 'iobnet indianoverseas', 'IOBCHN IOBBNK'],
-  ['centralbank', 'Central Bank of India', 'bank', 'centralbankofindia.co.in centralbank.bank.in', 'centralbankofindia', 'CBOIND CENTBK'],
-  ['uco', 'UCO Bank', 'bank', 'ucobank.com ucobank.bank.in', 'ucobank', 'UCOBNK'],
-  ['bom', 'Bank of Maharashtra', 'bank', 'bankofmaharashtra.in bankofmaharashtra.bank.in', 'bankofmaharashtra mahabank', 'MAHABK'],
-  ['federal', 'Federal Bank', 'bank', 'federalbank.co.in federalbank.bank.in', 'federalbank', 'FEDBNK FEDFIB'],
-  ['rbl', 'RBL Bank', 'bank', 'rblbank.com rbl.bank.in', 'rblbank', 'RBLBNK'],
-  ['aubank', 'AU Small Finance Bank', 'bank', 'aubank.in au.bank.in', 'aubank', 'AUBANK'],
-  ['bandhan', 'Bandhan Bank', 'bank', 'bandhanbank.com bandhan.bank.in', 'bandhanbank', 'BDNBNK'],
-  ['idbi', 'IDBI Bank', 'bank', 'idbibank.in idbi.bank.in', 'idbibank =idbi', 'IDBIBK'],
-  ['sib', 'South Indian Bank', 'bank', 'southindianbank.com southindianbank.bank.in', 'southindianbank', 'SIBSMS'],
-  ['ippb', 'India Post Payments Bank', 'bank', 'ippbonline.com ippb.bank.in', 'ippb ippbonline', 'IPBMSG IPPBNK'],
-  ['airtelbank', 'Airtel Payments Bank', 'bank', 'airtelpaymentsbank.com', 'airtelpaymentsbank', 'AIRBNK APBANK'],
-  ['jkbank', 'J&K Bank', 'bank', 'jkbank.com', 'jkbank', 'JKBANK'],
-  ['karnatakabank', 'Karnataka Bank', 'bank', 'karnatakabank.com', 'karnatakabank', 'KBLBNK'],
-  ['kvb', 'Karur Vysya Bank', 'bank', 'kvb.co.in', 'karurvysya', 'KVBANK'],
-  ['hsbc', 'HSBC', 'bank', 'hsbc.co.in hsbc.com', 'hsbc', 'HSBCIN'],
-  ['sc', 'Standard Chartered', 'bank', 'sc.com', 'standardchartered', 'SCBANK'],
-  ['citi', 'Citibank', 'bank', 'citibank.co.in citi.com citibank.com', 'citibank', 'CITIBK'],
-  // Payments
-  ['paytm', 'Paytm', 'pay', 'paytm.com paytm.in paytmbank.com paytmmall.com paytmmoney.com paytm.me paytmpayments.com', 'paytm', 'PAYTMB IPAYTM PYTMSM PAYTMM'],
-  ['phonepe', 'PhonePe', 'pay', 'phonepe.com phon.pe', 'phonepe phonpe fonepe', 'PHONPE PHNPAY'],
-  ['gpay', 'Google Pay', 'pay', 'pay.google.com', 'gpay googlepay =tez', 'GPAYIN'],
-  ['npci', 'NPCI / BHIM UPI', 'pay', 'npci.org.in bhimupi.org.in', 'npci =bhim bhimupi =upi', 'NPCIOR BHIMUP'],
-  ['amazonpay', 'Amazon Pay', 'pay', 'amazonpay.in', 'amazonpay', 'AMZPAY'],
-  ['mobikwik', 'MobiKwik', 'pay', 'mobikwik.com', 'mobikwik', 'MOBKWK MBKWIK'],
-  ['cred', 'CRED', 'pay', 'cred.club', '=cred', 'CREDCL CREDIN'],
-  ['freecharge', 'Freecharge', 'pay', 'freecharge.in', 'freecharge', 'FRECHG'],
-  ['bharatpe', 'BharatPe', 'pay', 'bharatpe.com bharatpe.in', 'bharatpe', 'BHRTPE'],
-  ['razorpay', 'Razorpay', 'pay', 'razorpay.com', 'razorpay', 'RZRPAY'],
-  // Government and regulators
-  ['rbi', 'Reserve Bank of India', 'gov', 'rbi.org.in rbi.gov.in', 'rbi reservebank', 'RBIBNK RBISAY', 'भारतीय रिज़र्व बैंक'],
-  ['sebi', 'SEBI', 'gov', 'sebi.gov.in', '=sebi', 'SEBIRE'],
-  ['uidai', 'UIDAI (Aadhaar)', 'gov', 'uidai.gov.in', 'uidai aadhaar aadhar adhaar myaadhaar', 'UIDAIG AADHAR', 'UIDAI (आधार)'],
-  ['incometax', 'Income Tax Department', 'gov', 'incometax.gov.in incometaxindia.gov.in tin-nsdl.com protean-tinpan.com utiitsl.com', 'incometax itrefund =efiling', 'ITDEFL ITDEPT CPCITD ITDCPC', 'आयकर विभाग'],
-  ['epfo', 'EPFO', 'gov', 'epfindia.gov.in epfo.gov.in', 'epfo epfindia', 'EPFOHO EPFOIN', 'ईपीएफओ'],
-  ['indiapost', 'India Post', 'gov', 'indiapost.gov.in', 'indiapost speedpost', 'INDPST IPOSTS', 'इंडिया पोस्ट'],
-  ['gst', 'GST Portal', 'gov', 'gst.gov.in cbic.gov.in', 'gst gstportal cbic', 'GSTIND'],
-  ['parivahan', 'Parivahan (RTO / e-Challan)', 'gov', 'parivahan.gov.in', 'parivahan echallan mparivahan rto vahan', 'VAHANP PARIVH ECHALN', 'परिवहन (RTO / ई-चालान)'],
-  ['digilocker', 'DigiLocker', 'gov', 'digilocker.gov.in', 'digilocker', 'DGLOCK'],
-  ['sancharsaathi', 'Sanchar Saathi (DoT)', 'gov', 'sancharsaathi.gov.in dot.gov.in', 'sancharsaathi chakshu', 'DOTGOV', 'संचार साथी (दूरसंचार विभाग)'],
-  ['cybercrime', 'National Cyber Crime Portal', 'gov', 'cybercrime.gov.in i4c.gov.in', 'cybercrime', 'CYBDOT', 'राष्ट्रीय साइबर क्राइम पोर्टल'],
-  ['pmkisan', 'PM-Kisan', 'gov', 'pmkisan.gov.in', 'pmkisan kisansamman', 'PMKISN', 'पीएम किसान'],
-  ['ayushman', 'Ayushman Bharat', 'gov', 'pmjay.gov.in nha.gov.in abdm.gov.in', 'ayushman pmjay', 'NHAPMJ', 'आयुष्मान भारत'],
-  ['passport', 'Passport Seva', 'gov', 'passportindia.gov.in', 'passportindia passportseva', 'PSPIND', 'पासपोर्ट सेवा'],
-  ['govin', 'Government of India', 'gov', 'india.gov.in mygov.in', 'mygov', 'MYGOVT GOVTIN', 'भारत सरकार'],
-  ['trai', 'TRAI', 'gov', 'trai.gov.in', '=trai', 'TRAIND', 'ट्राई'],
-  ['lic', 'LIC', 'ins', 'licindia.in licindia.com', 'licindia lic', 'LICIND'],
-  ['irctc', 'IRCTC', 'travel', 'irctc.co.in irctc.com irctctourism.com', 'irctc', 'IRCTCI IRCTCB'],
-  ['railways', 'Indian Railways', 'gov', 'indianrail.gov.in indianrailways.gov.in', 'indianrail indianrailways', 'INDRLY', 'भारतीय रेल'],
-  // Shopping
-  ['amazon', 'Amazon', 'shop', 'amazon.in amazon.com amazon.co.uk amzn.in amzn.to a.co amazon.jobs amazontrust.com media-amazon.com amazon.dev', 'amazon amzn', 'AMAZON AMZNIN AMAZNS'],
-  ['flipkart', 'Flipkart', 'shop', 'flipkart.com fkrt.it fkrt.co fkrt.cc flipkart.net ekartlogistics.com flipkartwholesale.com', 'flipkart flipcart ekart', 'FLPKRT FKRTIN FLIPKT'],
-  ['myntra', 'Myntra', 'shop', 'myntra.com myntr.it', 'myntra', 'MYNTRA'],
-  ['meesho', 'Meesho', 'shop', 'meesho.com', 'meesho', 'MEESHO'],
-  ['swiggy', 'Swiggy', 'shop', 'swiggy.com swiggy.in swig.gy', 'swiggy', 'SWIGGY'],
-  ['zomato', 'Zomato', 'shop', 'zomato.com zoma.to', 'zomato', 'ZOMATO'],
-  ['blinkit', 'Blinkit', 'shop', 'blinkit.com', 'blinkit', 'BLINKT'],
-  ['zepto', 'Zepto', 'shop', 'zeptonow.com zepto.com', 'zepto', 'ZEPTON'],
-  ['bigbasket', 'BigBasket', 'shop', 'bigbasket.com', 'bigbasket', 'BIGBKT'],
-  ['nykaa', 'Nykaa', 'shop', 'nykaa.com', 'nykaa', 'NYKAA'],
-  ['ajio', 'AJIO', 'shop', 'ajio.com', 'ajio', 'AJIOIN'],
-  ['jiomart', 'JioMart', 'shop', 'jiomart.com', 'jiomart', 'JIOMRT'],
-  ['tataneu', 'Tata Neu', 'shop', 'tataneu.com tatacliq.com', 'tataneu tatacliq', 'TATANU'],
-  ['snapdeal', 'Snapdeal', 'shop', 'snapdeal.com', 'snapdeal', 'SNPDEL'],
-  // Couriers
-  ['bluedart', 'Blue Dart', 'post', 'bluedart.com', 'bluedart', 'BLUDRT BLUDAR'],
-  ['dtdc', 'DTDC', 'post', 'dtdc.in dtdc.com', 'dtdc', 'DTDCIN DTDCEX'],
-  ['delhivery', 'Delhivery', 'post', 'delhivery.com', 'delhivery delhivary', 'DLHVRY DELHVR'],
-  ['fedex', 'FedEx', 'post', 'fedex.com', 'fedex', 'FEDEXI'],
-  ['dhl', 'DHL', 'post', 'dhl.com dhl.co.in dhl.de', 'dhl', 'DHLIND'],
-  ['xpressbees', 'Xpressbees', 'post', 'xpressbees.com', 'xpressbees', 'XPRSBS'],
-  ['ecomexpress', 'Ecom Express', 'post', 'ecomexpress.in', 'ecomexpress', 'ECMEXP'],
-  ['shiprocket', 'Shiprocket', 'post', 'shiprocket.in shiprocket.co', 'shiprocket', 'SHPRKT'],
-  // Telecom
-  ['jio', 'Jio', 'tel', 'jio.com myjio.com jiofiber.com ril.com jiosaavn.com jiocinema.com jiohotstar.com jiopay.in', 'jio myjio jiofiber', 'JIOINF JIOSVC JIOPAY JIOCOM'],
-  ['airtel', 'Airtel', 'tel', 'airtel.in airtel.com airtelxstream.in', 'airtel', 'AIRTEL AIRMKT AIRINF'],
-  ['vi', 'Vi (Vodafone Idea)', 'tel', 'myvi.in vodafoneidea.com vodafone.in', 'vodafone myvi vodafoneidea', 'VICARE VIINFO VMVODA'],
-  ['bsnl', 'BSNL', 'tel', 'bsnl.co.in bsnl.in', 'bsnl', 'BSNLIN BSNLSM'],
-  // Utilities
-  ['tatapower', 'Tata Power', 'util', 'tatapower.com tatapower-ddl.com', 'tatapower', 'TATAPW TPDDLI'],
-  ['adani', 'Adani Electricity', 'util', 'adanielectricity.com adani.com', 'adanielectricity =adani', 'ADANIE AEMLIN'],
-  ['bescom', 'BESCOM', 'util', 'bescom.co.in bescom.karnataka.gov.in bescom.org', 'bescom', 'BESCOM'],
-  ['msedcl', 'MSEDCL (Mahavitaran)', 'util', 'mahadiscom.in', 'mahadiscom msedcl mseb mahavitaran', 'MSEDCL MAHAVT', 'महावितरण (MSEDCL)'],
-  ['torrent', 'Torrent Power', 'util', 'torrentpower.com', 'torrentpower', 'TORNTP'],
-  ['bses', 'BSES', 'util', 'bsesdelhi.com bsesrajdhani.com bsesyamuna.com', 'bses', 'BSESRJ BSESYM'],
-  ['tneb', 'TANGEDCO (TNEB)', 'util', 'tnebltd.gov.in tangedco.gov.in tnpdcl.org', 'tneb tangedco', 'TNEBLT'],
-  ['uppcl', 'UPPCL', 'util', 'uppcl.org', 'uppcl', 'UPPCLB'],
-  ['kseb', 'KSEB', 'util', 'kseb.in', 'kseb', 'KSEBLT'],
-  ['indane', 'Indane Gas', 'util', 'indane.co.in iocl.com indianoil.in', 'indane indianoil', 'INDANE IOCLPN'],
-  ['hpgas', 'HP Gas', 'util', 'myhpgas.in hindustanpetroleum.com', 'hpgas myhpgas', 'HPGASI'],
-  ['bharatgas', 'Bharat Gas', 'util', 'ebharatgas.com bharatpetroleum.in', 'bharatgas ebharatgas', 'BHRTGS'],
-  // Travel
-  ['makemytrip', 'MakeMyTrip', 'travel', 'makemytrip.com', 'makemytrip', 'MMTRIP'],
-  ['goibibo', 'Goibibo', 'travel', 'goibibo.com', 'goibibo', 'GOIBIB'],
-  ['yatra', 'Yatra', 'travel', 'yatra.com', '=yatra', 'YATRAC'],
-  ['cleartrip', 'Cleartrip', 'travel', 'cleartrip.com', 'cleartrip', 'CLRTRP'],
-  ['ixigo', 'ixigo', 'travel', 'ixigo.com', 'ixigo', 'IXIGOO'],
-  ['redbus', 'redBus', 'travel', 'redbus.in', 'redbus', 'REDBUS'],
-  ['airindia', 'Air India', 'travel', 'airindia.com airindia.in', 'airindia', 'AIRIND'],
-  ['indigo', 'IndiGo', 'travel', 'goindigo.in', 'goindigo', 'INDIGO'],
-  ['uber', 'Uber', 'travel', 'uber.com', '=uber', 'UBERIN'],
-  ['ola', 'Ola', 'travel', 'olacabs.com olaelectric.com', 'olacabs', 'OLACAB'],
-  ['rapido', 'Rapido', 'travel', 'rapido.bike', 'rapido', 'RAPIDO'],
-  // Tech and social
-  ['google', 'Google', 'tech', 'google.com google.co.in goo.gl g.co googleapis.com gstatic.com android.com youtube.com youtu.be', 'google youtube', 'GOOGLE'],
-  ['whatsapp', 'WhatsApp', 'tech', 'whatsapp.com whatsapp.net wa.me', 'whatsapp', ''],
-  ['telegram', 'Telegram', 'tech', 'telegram.org t.me telegram.me', 'telegram', ''],
-  ['meta', 'Facebook / Instagram', 'tech', 'facebook.com fb.com fb.me instagram.com instagr.am meta.com messenger.com', 'facebook instagram', ''],
-  ['microsoft', 'Microsoft', 'tech', 'microsoft.com live.com outlook.com office.com microsoftonline.com office365.com bing.com', 'microsoft office365', ''],
-  ['apple', 'Apple', 'tech', 'apple.com icloud.com', '=apple icloud', ''],
-  ['netflix', 'Netflix', 'tech', 'netflix.com', 'netflix', ''],
-  ['truecaller', 'Truecaller', 'tech', 'truecaller.com', 'truecaller', ''],
-  // Investing and finance
-  ['zerodha', 'Zerodha', 'fin', 'zerodha.com kite.trade', 'zerodha', 'ZERODH'],
-  ['groww', 'Groww', 'fin', 'groww.in', 'groww', 'GROWWI'],
-  ['upstox', 'Upstox', 'fin', 'upstox.com', 'upstox', 'UPSTOX'],
-  ['angelone', 'Angel One', 'fin', 'angelone.in angelbroking.com', 'angelone angelbroking', 'ANGELB'],
-  ['nse', 'NSE', 'fin', 'nseindia.com', 'nseindia', 'NSEIND'],
-  ['bse', 'BSE', 'fin', 'bseindia.com', 'bseindia', 'BSEIND'],
-  ['cdsl', 'CDSL', 'fin', 'cdslindia.com cdslindia.in', 'cdsl', 'CDSLIN'],
-  ['nsdl', 'NSDL', 'fin', 'nsdl.co.in nsdl.com', 'nsdl', 'NSDLIN'],
-  ['bajaj', 'Bajaj Finserv', 'fin', 'bajajfinserv.in bajajfinservmarkets.in', 'bajajfinserv', 'BAJAJF'],
-  ['policybazaar', 'Policybazaar', 'fin', 'policybazaar.com', 'policybazaar', 'PLCYBZ'],
-  ['muthoot', 'Muthoot Finance', 'fin', 'muthootfinance.com', 'muthoot', 'MUTHOT'],
-];
+// One brand per line: id|name|kind|official domains|tokens|SMS headers|Hindi name (optional).
+// Lists inside a field are space-separated. Sections, in order: Banks, Payments, Government and regulators, Shopping, Couriers, Telecom, Utilities, Travel, Tech and social, Investing and finance.
+// A packed string instead of nested arrays keeps the bundle smaller; load() splits it on first use.
+const ROWS = `sbi|SBI|bank|sbi.co.in sbi.bank.in onlinesbi.sbi onlinesbi.com bank.sbi yonobusiness.sbi sbicard.com sbilife.co.in sbimf.com sbigeneral.in sbisecurities.in sbicaps.com|sbi onlinesbi yono statebank sbicard|SBIBNK SBIINB SBIPSG CBSSBI ATMSBI SBIOTP SBYONO SBICRD SBIUPI SBMSMS SBIBMS
+hdfc|HDFC Bank|bank|hdfcbank.com hdfc.bank.in hdfcbank.bank.in hdfcbank.net hdfc.com hdfclife.com hdfcergo.com hdfcfund.com hdfcsec.com hdfcbk.io payzapp.in hdfcsky.com|hdfc hdfcbank payzapp|HDFCBK HDFCBN HDFCCC HDFCLI HDFCBP
+icici|ICICI Bank|bank|icicibank.com icici.bank.in icicibank.bank.in icicidirect.com iciciprulife.com icicilombard.com icicipruamc.com icicisecurities.com|icici icicibank imobile|ICICIB ICICIT ICICIO ICICIS ICICIN
+axis|Axis Bank|bank|axisbank.com axis.bank.in axisbank.bank.in axisbank.co.in axisdirect.in axismf.com|axisbank =axis|AXISBK AXISMR AXISBN AXISCC
+kotak|Kotak Mahindra Bank|bank|kotak.com kotak.bank.in kotakbank.com kotaksecurities.com kotakmf.com kotaklife.com kotak811.com|kotak kotak811|KOTAKB KOTAKM KMBLTD
+pnb|Punjab National Bank|bank|pnbindia.in pnb.bank.in pnb.co.in netpnb.com pnbnet.in|pnb pnbindia netpnb punjabnational|PNBSMS PNBNET PNBBNK
+bob|Bank of Baroda|bank|bankofbaroda.in bankofbaroda.bank.in bankofbaroda.com bobfinancial.com bobcard.co.in|bankofbaroda bob barodampay bobworld|BOBTXN BOBSMS BOBCRD BOBFIN
+canara|Canara Bank|bank|canarabank.com canarabank.bank.in canarabank.in|canarabank =canara|CANBNK CNRBNK
+union|Union Bank of India|bank|unionbankofindia.co.in unionbankofindia.bank.in unionbankonline.co.in|unionbank unionbankofindia|UNIONB UBOIIN
+yes|Yes Bank|bank|yesbank.in yesbank.bank.in yesbank.com|yesbank|YESBNK YESBKG
+idfc|IDFC FIRST Bank|bank|idfcfirstbank.com idfcfirst.bank.in idfcfirstbank.bank.in|idfc idfcfirst|IDFCFB IDFCBK
+indusind|IndusInd Bank|bank|indusind.com indusind.bank.in|indusind|INDUSB INDUSL
+boi|Bank of India|bank|bankofindia.co.in bankofindia.bank.in bankofindia.com|bankofindia|BOIIND BOISMS
+indianbank|Indian Bank|bank|indianbank.in indianbank.bank.in|indianbank|INDBNK
+iob|Indian Overseas Bank|bank|iob.in iob.bank.in|iobnet indianoverseas|IOBCHN IOBBNK
+centralbank|Central Bank of India|bank|centralbankofindia.co.in centralbank.bank.in|centralbankofindia|CBOIND CENTBK
+uco|UCO Bank|bank|ucobank.com ucobank.bank.in|ucobank|UCOBNK
+bom|Bank of Maharashtra|bank|bankofmaharashtra.in bankofmaharashtra.bank.in|bankofmaharashtra mahabank|MAHABK
+federal|Federal Bank|bank|federalbank.co.in federalbank.bank.in|federalbank|FEDBNK FEDFIB
+rbl|RBL Bank|bank|rblbank.com rbl.bank.in|rblbank|RBLBNK
+aubank|AU Small Finance Bank|bank|aubank.in au.bank.in|aubank|AUBANK
+bandhan|Bandhan Bank|bank|bandhanbank.com bandhan.bank.in|bandhanbank|BDNBNK
+idbi|IDBI Bank|bank|idbibank.in idbi.bank.in|idbibank =idbi|IDBIBK
+sib|South Indian Bank|bank|southindianbank.com southindianbank.bank.in|southindianbank|SIBSMS
+ippb|India Post Payments Bank|bank|ippbonline.com ippb.bank.in|ippb ippbonline|IPBMSG IPPBNK
+airtelbank|Airtel Payments Bank|bank|airtelpaymentsbank.com|airtelpaymentsbank|AIRBNK APBANK
+jkbank|J&K Bank|bank|jkbank.com|jkbank|JKBANK
+karnatakabank|Karnataka Bank|bank|karnatakabank.com|karnatakabank|KBLBNK
+kvb|Karur Vysya Bank|bank|kvb.co.in|karurvysya|KVBANK
+hsbc|HSBC|bank|hsbc.co.in hsbc.com|hsbc|HSBCIN
+sc|Standard Chartered|bank|sc.com|standardchartered|SCBANK
+citi|Citibank|bank|citibank.co.in citi.com citibank.com|citibank|CITIBK
+paytm|Paytm|pay|paytm.com paytm.in paytmbank.com paytmmall.com paytmmoney.com paytm.me paytmpayments.com|paytm|PAYTMB IPAYTM PYTMSM PAYTMM
+phonepe|PhonePe|pay|phonepe.com phon.pe|phonepe phonpe fonepe|PHONPE PHNPAY
+gpay|Google Pay|pay|pay.google.com|gpay googlepay =tez|GPAYIN
+npci|NPCI / BHIM UPI|pay|npci.org.in bhimupi.org.in|npci =bhim bhimupi =upi|NPCIOR BHIMUP
+amazonpay|Amazon Pay|pay|amazonpay.in|amazonpay|AMZPAY
+mobikwik|MobiKwik|pay|mobikwik.com|mobikwik|MOBKWK MBKWIK
+cred|CRED|pay|cred.club|=cred|CREDCL CREDIN
+freecharge|Freecharge|pay|freecharge.in|freecharge|FRECHG
+bharatpe|BharatPe|pay|bharatpe.com bharatpe.in|bharatpe|BHRTPE
+razorpay|Razorpay|pay|razorpay.com|razorpay|RZRPAY
+rbi|Reserve Bank of India|gov|rbi.org.in rbi.gov.in|rbi reservebank|RBIBNK RBISAY|भारतीय रिज़र्व बैंक
+sebi|SEBI|gov|sebi.gov.in|=sebi|SEBIRE
+uidai|UIDAI (Aadhaar)|gov|uidai.gov.in|uidai aadhaar aadhar adhaar myaadhaar|UIDAIG AADHAR|UIDAI (आधार)
+incometax|Income Tax Department|gov|incometax.gov.in incometaxindia.gov.in tin-nsdl.com protean-tinpan.com utiitsl.com|incometax itrefund =efiling|ITDEFL ITDEPT CPCITD ITDCPC|आयकर विभाग
+epfo|EPFO|gov|epfindia.gov.in epfo.gov.in|epfo epfindia|EPFOHO EPFOIN|ईपीएफओ
+indiapost|India Post|gov|indiapost.gov.in|indiapost speedpost|INDPST IPOSTS|इंडिया पोस्ट
+gst|GST Portal|gov|gst.gov.in cbic.gov.in|gst gstportal cbic|GSTIND
+parivahan|Parivahan (RTO / e-Challan)|gov|parivahan.gov.in|parivahan echallan mparivahan rto vahan|VAHANP PARIVH ECHALN|परिवहन (RTO / ई-चालान)
+digilocker|DigiLocker|gov|digilocker.gov.in|digilocker|DGLOCK
+sancharsaathi|Sanchar Saathi (DoT)|gov|sancharsaathi.gov.in dot.gov.in|sancharsaathi chakshu|DOTGOV|संचार साथी (दूरसंचार विभाग)
+cybercrime|National Cyber Crime Portal|gov|cybercrime.gov.in i4c.gov.in|cybercrime|CYBDOT|राष्ट्रीय साइबर क्राइम पोर्टल
+pmkisan|PM-Kisan|gov|pmkisan.gov.in|pmkisan kisansamman|PMKISN|पीएम किसान
+ayushman|Ayushman Bharat|gov|pmjay.gov.in nha.gov.in abdm.gov.in|ayushman pmjay|NHAPMJ|आयुष्मान भारत
+passport|Passport Seva|gov|passportindia.gov.in|passportindia passportseva|PSPIND|पासपोर्ट सेवा
+govin|Government of India|gov|india.gov.in mygov.in|mygov|MYGOVT GOVTIN|भारत सरकार
+trai|TRAI|gov|trai.gov.in|=trai|TRAIND|ट्राई
+lic|LIC|ins|licindia.in licindia.com|licindia lic|LICIND
+irctc|IRCTC|travel|irctc.co.in irctc.com irctctourism.com|irctc|IRCTCI IRCTCB
+railways|Indian Railways|gov|indianrail.gov.in indianrailways.gov.in|indianrail indianrailways|INDRLY|भारतीय रेल
+amazon|Amazon|shop|amazon.in amazon.com amazon.co.uk amzn.in amzn.to a.co amazon.jobs amazontrust.com media-amazon.com amazon.dev|amazon amzn|AMAZON AMZNIN AMAZNS
+flipkart|Flipkart|shop|flipkart.com fkrt.it fkrt.co fkrt.cc flipkart.net ekartlogistics.com flipkartwholesale.com|flipkart flipcart ekart|FLPKRT FKRTIN FLIPKT
+myntra|Myntra|shop|myntra.com myntr.it|myntra|MYNTRA
+meesho|Meesho|shop|meesho.com|meesho|MEESHO
+swiggy|Swiggy|shop|swiggy.com swiggy.in swig.gy|swiggy|SWIGGY
+zomato|Zomato|shop|zomato.com zoma.to|zomato|ZOMATO
+blinkit|Blinkit|shop|blinkit.com|blinkit|BLINKT
+zepto|Zepto|shop|zeptonow.com zepto.com|zepto|ZEPTON
+bigbasket|BigBasket|shop|bigbasket.com|bigbasket|BIGBKT
+nykaa|Nykaa|shop|nykaa.com|nykaa|NYKAA
+ajio|AJIO|shop|ajio.com|ajio|AJIOIN
+jiomart|JioMart|shop|jiomart.com|jiomart|JIOMRT
+tataneu|Tata Neu|shop|tataneu.com tatacliq.com|tataneu tatacliq|TATANU
+snapdeal|Snapdeal|shop|snapdeal.com|snapdeal|SNPDEL
+bluedart|Blue Dart|post|bluedart.com|bluedart|BLUDRT BLUDAR
+dtdc|DTDC|post|dtdc.in dtdc.com|dtdc|DTDCIN DTDCEX
+delhivery|Delhivery|post|delhivery.com|delhivery delhivary|DLHVRY DELHVR
+fedex|FedEx|post|fedex.com|fedex|FEDEXI
+dhl|DHL|post|dhl.com dhl.co.in dhl.de|dhl|DHLIND
+xpressbees|Xpressbees|post|xpressbees.com|xpressbees|XPRSBS
+ecomexpress|Ecom Express|post|ecomexpress.in|ecomexpress|ECMEXP
+shiprocket|Shiprocket|post|shiprocket.in shiprocket.co|shiprocket|SHPRKT
+jio|Jio|tel|jio.com myjio.com jiofiber.com ril.com jiosaavn.com jiocinema.com jiohotstar.com jiopay.in|jio myjio jiofiber|JIOINF JIOSVC JIOPAY JIOCOM
+airtel|Airtel|tel|airtel.in airtel.com airtelxstream.in|airtel|AIRTEL AIRMKT AIRINF
+vi|Vi (Vodafone Idea)|tel|myvi.in vodafoneidea.com vodafone.in|vodafone myvi vodafoneidea|VICARE VIINFO VMVODA
+bsnl|BSNL|tel|bsnl.co.in bsnl.in|bsnl|BSNLIN BSNLSM
+tatapower|Tata Power|util|tatapower.com tatapower-ddl.com|tatapower|TATAPW TPDDLI
+adani|Adani Electricity|util|adanielectricity.com adani.com|adanielectricity =adani|ADANIE AEMLIN
+bescom|BESCOM|util|bescom.co.in bescom.karnataka.gov.in bescom.org|bescom|BESCOM
+msedcl|MSEDCL (Mahavitaran)|util|mahadiscom.in|mahadiscom msedcl mseb mahavitaran|MSEDCL MAHAVT|महावितरण (MSEDCL)
+torrent|Torrent Power|util|torrentpower.com|torrentpower|TORNTP
+bses|BSES|util|bsesdelhi.com bsesrajdhani.com bsesyamuna.com|bses|BSESRJ BSESYM
+tneb|TANGEDCO (TNEB)|util|tnebltd.gov.in tangedco.gov.in tnpdcl.org|tneb tangedco|TNEBLT
+uppcl|UPPCL|util|uppcl.org|uppcl|UPPCLB
+kseb|KSEB|util|kseb.in|kseb|KSEBLT
+indane|Indane Gas|util|indane.co.in iocl.com indianoil.in|indane indianoil|INDANE IOCLPN
+hpgas|HP Gas|util|myhpgas.in hindustanpetroleum.com|hpgas myhpgas|HPGASI
+bharatgas|Bharat Gas|util|ebharatgas.com bharatpetroleum.in|bharatgas ebharatgas|BHRTGS
+makemytrip|MakeMyTrip|travel|makemytrip.com|makemytrip|MMTRIP
+goibibo|Goibibo|travel|goibibo.com|goibibo|GOIBIB
+yatra|Yatra|travel|yatra.com|=yatra|YATRAC
+cleartrip|Cleartrip|travel|cleartrip.com|cleartrip|CLRTRP
+ixigo|ixigo|travel|ixigo.com|ixigo|IXIGOO
+redbus|redBus|travel|redbus.in|redbus|REDBUS
+airindia|Air India|travel|airindia.com airindia.in|airindia|AIRIND
+indigo|IndiGo|travel|goindigo.in|goindigo|INDIGO
+uber|Uber|travel|uber.com|=uber|UBERIN
+ola|Ola|travel|olacabs.com olaelectric.com|olacabs|OLACAB
+rapido|Rapido|travel|rapido.bike|rapido|RAPIDO
+google|Google|tech|google.com google.co.in goo.gl g.co googleapis.com gstatic.com android.com youtube.com youtu.be|google youtube|GOOGLE
+whatsapp|WhatsApp|tech|whatsapp.com whatsapp.net wa.me|whatsapp|
+telegram|Telegram|tech|telegram.org t.me telegram.me|telegram|
+meta|Facebook / Instagram|tech|facebook.com fb.com fb.me instagram.com instagr.am meta.com messenger.com|facebook instagram|
+microsoft|Microsoft|tech|microsoft.com live.com outlook.com office.com microsoftonline.com office365.com bing.com|microsoft office365|
+apple|Apple|tech|apple.com icloud.com|=apple icloud|
+netflix|Netflix|tech|netflix.com|netflix|
+truecaller|Truecaller|tech|truecaller.com|truecaller|
+zerodha|Zerodha|fin|zerodha.com kite.trade|zerodha|ZERODH
+groww|Groww|fin|groww.in|groww|GROWWI
+upstox|Upstox|fin|upstox.com|upstox|UPSTOX
+angelone|Angel One|fin|angelone.in angelbroking.com|angelone angelbroking|ANGELB
+nse|NSE|fin|nseindia.com|nseindia|NSEIND
+bse|BSE|fin|bseindia.com|bseindia|BSEIND
+cdsl|CDSL|fin|cdslindia.com cdslindia.in|cdsl|CDSLIN
+nsdl|NSDL|fin|nsdl.co.in nsdl.com|nsdl|NSDLIN
+bajaj|Bajaj Finserv|fin|bajajfinserv.in bajajfinservmarkets.in|bajajfinserv|BAJAJF
+policybazaar|Policybazaar|fin|policybazaar.com|policybazaar|PLCYBZ
+muthoot|Muthoot Finance|fin|muthootfinance.com|muthoot|MUTHOT`;
 
 /** Hosts where anyone can publish content; official for the platform but never proof of a brand. */
 const USER_CONTENT =
@@ -216,15 +204,18 @@ let knownGood: Set<string> | null = null;
 
 function load(): void {
   if (brands) return;
-  brands = ROWS.map(([id, name, kind, domains, tokens, sms, nameHi]) => ({
-    id,
-    name,
-    nameHi: nameHi ?? name,
-    kind,
-    domains: domains.split(' '),
-    tokens: tokens.split(' ').filter(Boolean),
-    sms: sms ? sms.split(' ') : [],
-  }));
+  brands = ROWS.split('\n').map((line) => {
+    const [id, name, kind, domains, tokens, sms, nameHi] = line.split('|') as [string, string, BrandKind, string, string, string, string?];
+    return {
+      id,
+      name,
+      nameHi: nameHi ?? name,
+      kind,
+      domains: domains.split(' '),
+      tokens: tokens.split(' ').filter(Boolean),
+      sms: sms ? sms.split(' ') : [],
+    };
+  });
   officialMap = new Map();
   headerMap = new Map();
   for (const b of brands) {
