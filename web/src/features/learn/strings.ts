@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const learnStrings = defineStrings(
+  'learn',
   {
     title: 'Know the scams',
     eyebrow: 'Scam encyclopedia',

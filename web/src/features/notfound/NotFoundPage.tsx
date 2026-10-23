@@ -4,7 +4,8 @@ import { ButtonRouterLink } from '@/components/ui/Button';
 import { defineStrings, useT } from '@/i18n/core';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
 
-const strings = defineStrings(
+export const notFoundStrings = defineStrings(
+  'notFound',
   {
     title: 'Page not found',
     eyebrow: 'Error 404',
@@ -26,7 +27,7 @@ const strings = defineStrings(
 );
 
 export default function NotFoundPage() {
-  const t = useT(strings);
+  const t = useT(notFoundStrings);
   useDocumentTitle(t.title);
   return (
     <div className="mx-auto flex min-h-[70dvh] max-w-2xl flex-col items-center justify-center px-6 py-16 text-center">

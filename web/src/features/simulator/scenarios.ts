@@ -1,5 +1,5 @@
 import type { ScamCategory } from '@ruko/engine';
-import type { Locale } from '@/i18n/core';
+import { baseLocale, type Locale } from '@/i18n/core';
 
 /**
  * Spot the scam: 21 hand-written scenarios (14 scams, 7 genuine) in three
@@ -975,7 +975,8 @@ export function scenariosForLevel(level: Level): Scenario[] {
 }
 
 export function contentFor(s: Scenario, locale: Locale): ScenarioContent {
-  return locale === 'hi' ? s.hi : s.en;
+  // Scenarios are written in English and Hindi; Marathi players get Hindi, Gujarati players English.
+  return baseLocale(locale) === 'hi' ? s.hi : s.en;
 }
 
 /** All searchable text of a scenario in one language (flags with on:'content' must be found here). */

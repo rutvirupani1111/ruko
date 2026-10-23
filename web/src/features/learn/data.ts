@@ -1,5 +1,5 @@
 import type { CategoryInfo, ScamCategory } from '@ruko/engine';
-import type { Locale } from '@/i18n/core';
+import { baseLocale, type BaseLocale, type Locale } from '@/i18n/core';
 import { CATEGORY_ORDER } from '@/data/categories';
 
 export interface LocalizedCategory {
@@ -7,7 +7,7 @@ export interface LocalizedCategory {
   name: string;
   /** The name in the other language (shown small, with its own lang attribute). */
   altName: string;
-  altLang: Locale;
+  altLang: BaseLocale;
   short: string;
   howItWorks: string[];
   redFlags: string[];
@@ -26,7 +26,8 @@ export function orderedCategories(all: Record<string, CategoryInfo> | undefined)
 }
 
 export function localize(info: CategoryInfo, locale: Locale): LocalizedCategory {
-  const hi = locale === 'hi';
+  // Category text comes from the engine (English and Hindi); Marathi reads Hindi, Gujarati English.
+  const hi = baseLocale(locale) === 'hi';
   return {
     id: info.id,
     name: hi ? info.nameHi : info.name,

@@ -44,7 +44,8 @@ const TARGETS = [
   { code: 'hi', name: 'हिंदी (Hindi)' },
 ];
 
-const strings = defineStrings(
+export const chromeAiStrings = defineStrings(
+  'chromeAi',
   {
     translate: 'Translate',
     translateTo: 'Translate this explanation into',
@@ -54,6 +55,7 @@ const strings = defineStrings(
     failed: 'Your browser could not do this right now.',
     note: 'Done by your browser’s built-in AI, on this device.',
     choose: 'Choose a language',
+    translateInto: (language: string) => `Translate into ${language}`,
   },
   {
     translate: 'अनुवाद करें',
@@ -64,6 +66,7 @@ const strings = defineStrings(
     failed: 'आपका ब्राउज़र अभी यह नहीं कर पाया।',
     note: 'यह आपके ब्राउज़र के बिल्ट-इन AI ने इसी फ़ोन पर किया।',
     choose: 'भाषा चुनें',
+    translateInto: (language: string) => `${language} में अनुवाद करें`,
   },
 );
 
@@ -75,7 +78,7 @@ function explanationText(v: Verdict): string {
 }
 
 export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
-  const t = useT(strings);
+  const t = useT(chromeAiStrings);
   const { locale } = useLocale();
   const [canTranslate, setCanTranslate] = useState(false);
   const [canExplain, setCanExplain] = useState(false);

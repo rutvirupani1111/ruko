@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const simStrings = defineStrings(
+  'simulator',
   {
     title: 'Spot the scam',
     eyebrow: 'A two-minute game',

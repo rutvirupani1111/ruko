@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const privacyStrings = defineStrings(
+  'privacy',
   {
     title: 'How Ruko protects your privacy',
     eyebrow: 'Privacy',

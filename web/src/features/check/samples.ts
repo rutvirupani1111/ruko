@@ -1,11 +1,11 @@
 import type { Source } from '@ruko/engine';
-import type { Locale } from '@/i18n/core';
+import type { BaseLocale } from '@/i18n/core';
 
 export interface Sample {
   id: string;
   kind: 'scam' | 'genuine';
-  label: Record<Locale, string>;
-  text: Record<Locale, string>;
+  label: Record<BaseLocale, string>;
+  text: Record<BaseLocale, string>;
   source?: Source;
   sender?: string;
 }

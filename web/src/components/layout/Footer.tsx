@@ -20,8 +20,8 @@ export function Footer() {
   const helplines = [
     { href: config.official.helplineHref, label: '1930', external: false },
     { href: config.official.cybercrime, label: 'cybercrime.gov.in', external: true },
-    { href: config.official.chakshu, label: locale === 'hi' ? 'चक्षु (संचार साथी)' : 'Chakshu (Sanchar Saathi)', external: true },
-    { href: config.official.ceir, label: locale === 'hi' ? 'CEIR: खोया फ़ोन ब्लॉक करें' : 'CEIR: block a lost phone', external: true },
+    { href: config.official.chakshu, label: t.footer.chakshuLink, external: true },
+    { href: config.official.ceir, label: t.footer.ceirLink, external: true },
   ];
 
   return (

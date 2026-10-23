@@ -21,7 +21,7 @@ import { Button, ButtonLink, ButtonRouterLink } from '@/components/ui/Button';
 import { config } from '@/config';
 import { CATEGORY_ORDER } from '@/data/categories';
 import { common } from '@/i18n/common';
-import { useLocale, useT, type Locale } from '@/i18n/core';
+import { baseLocale, pick, useLocale, useT, type BaseLocale } from '@/i18n/core';
 import { cn } from '@/lib/cn';
 import { PREF, readJson, writeJson } from '@/lib/storage';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
@@ -215,7 +215,7 @@ const CONTACT_KEYS = ['call', 'sms', 'whatsapp', 'email', 'web', 'social', 'othe
 const PAYMENT_KEYS = ['upi', 'debit', 'credit', 'netbanking', 'wallet', 'other'] as const;
 
 interface FormState {
-  lang: Locale;
+  lang: BaseLocale;
   name: string;
   mobile: string;
   email: string;
@@ -240,7 +240,7 @@ interface FormState {
 
 const blankTx = (): Transaction => ({ at: '', amount: '', reference: '', from: '', to: '' });
 
-function initialForm(lang: Locale): FormState {
+function initialForm(lang: BaseLocale): FormState {
   const base = emptyComplaint(lang);
   return {
     lang,
@@ -271,7 +271,7 @@ function ComplaintGenerator() {
   const { locale } = useLocale();
   const ui = useT(helpStrings).form;
   const id = useId().replace(/:/g, '');
-  const [form, setForm] = useState<FormState>(() => initialForm(locale));
+  const [form, setForm] = useState<FormState>(() => initialForm(baseLocale(locale)));
   const [copied, setCopied] = useState(false);
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -446,7 +446,7 @@ function ComplaintGenerator() {
                 <option value="">{ui.choose}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
-                    {locale === 'hi' ? cat.hi : cat.en}
+                    {baseLocale(locale) === 'hi' ? cat.hi : cat.en}
                   </option>
                 ))}
               </select>
@@ -647,9 +647,9 @@ function ComplaintGenerator() {
             size="md"
             className="mt-3 text-accent"
             external
-            newTabLabel={helpStrings[locale].steps.report.cta}
+            newTabLabel={pick(helpStrings, locale).steps.report.cta}
           >
-            {helpStrings[locale].steps.report.cta}
+            {pick(helpStrings, locale).steps.report.cta}
             <ExternalLink aria-hidden="true" />
           </ButtonLink>
           <Link to="/privacy" className="mt-2 block text-sm text-subtle underline-offset-4 hover:underline">

@@ -1,6 +1,7 @@
 import { defineStrings } from '@/i18n/core';
 
 export const reportStrings = defineStrings(
+  'report',
   {
     title: 'Report a scam number, UPI ID or link',
     eyebrow: 'Report a scammer',
