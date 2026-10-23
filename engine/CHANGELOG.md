@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.4 (2026-10-23)
+
+Size pass on `analyze()`. No behaviour change: every corpus verdict in both locales (628 full
+verdict objects), CATEGORIES, URL/UPI/phone analyses, official-domain lookups and hashes are
+byte-identical to 0.1.3, so `ENGINE_VERSION` stays `0.1.3`. Exports and types unchanged.
+
+- The Hindi message table (src/i18n/hi.ts) is an array in the key order of `en`, zipped with the
+  keys on first Hindi lookup, so the bundle carries the 179 message keys once instead of twice.
+  New unit test checks the two tables line up (length and placeholders key by key). 81.9 -> 81.5 KB.
+- The brand registry (src/domains/brands.ts) is one packed `id|name|kind|domains|tokens|sms|hindi`
+  line per brand, split on first use; `getBrands()` is deep-equal to 0.1.3 (129 brands). 81.5 -> 81.4 KB.
+- Not fixed: the `money_req` "bhejo" alternation bug. Putting `bhej` last makes "50 rs bhejo" and
+  "paise bhejo" match, but it changes 6 corpus verdicts (lot-hl-1, loan-hl-2, sex-hl-2, gov-hl-1,
+  imp-hl-2, rom-hl-1: signals/spans), so it was logged and skipped for a pass with a corpus review.
+- Measured and dropped: re-encoding Devanagari literals as 2-byte characters would save only
+  ~1.7 KB gz for a decode step everywhere Hindi is used.
+- Size: `analyze()` alone 81.9 -> 81.4 KB min+gzip (budget 70 KB, still not met); full bundle
+  101.9 -> 101.4 KB; `analyzeUrl` 22.8 -> 22.3 KB; `identifierHash` unchanged (5.0 KB).
+
 ## 0.1.3 (2026-10-23)
 
 Rule pass that closes the last 6 corpus misses. Verdicts change (`ENGINE_VERSION` is now `0.1.3`),
