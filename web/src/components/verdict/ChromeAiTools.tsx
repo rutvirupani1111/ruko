@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Languages, LoaderCircle, Sparkles } from 'lucide-react';
 import type { Verdict } from '@ruko/engine';
 import { Button } from '@/components/ui/Button';
-import { defineStrings, useLocale, useT } from '@/i18n/core';
+import { LOCALE_NAMES, baseLocale, defineStrings, useLocale, useT } from '@/i18n/core';
 
 /**
  * Optional on-device AI from Chrome's built-in Translator and Prompt APIs.
@@ -80,7 +80,11 @@ function explanationText(v: Verdict): string {
 export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
   const t = useT(chromeAiStrings);
   const { locale } = useLocale();
+  // The verdict is in the base language; a Gujarati/Marathi reader is offered their own language first.
+  const source = baseLocale(locale);
+  const own = locale !== source ? locale : null;
   const [canTranslate, setCanTranslate] = useState(false);
+  const [canOwn, setCanOwn] = useState(false);
   const [canExplain, setCanExplain] = useState(false);
   const [target, setTarget] = useState('');
   const [busy, setBusy] = useState<'translate' | 'explain' | null>(null);
@@ -92,8 +96,9 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
     (async () => {
       try {
         if (g.Translator) {
-          const a = await g.Translator.availability({ sourceLanguage: locale, targetLanguage: locale === 'en' ? 'hi' : 'en' });
+          const a = await g.Translator.availability({ sourceLanguage: source, targetLanguage: own ?? (source === 'en' ? 'hi' : 'en') });
           if (alive) setCanTranslate(a !== 'unavailable');
+          if (alive) setCanOwn(!!own && a !== 'unavailable');
         }
       } catch {
         /* not supported */
@@ -110,7 +115,7 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
     return () => {
       alive = false;
     };
-  }, [locale]);
+  }, [source, own]);
 
   // A new verdict invalidates old output.
   useEffect(() => {
@@ -120,11 +125,11 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
 
   const translate = async (code: string) => {
     setTarget(code);
-    if (!code || !g.Translator || code === locale) return;
+    if (!code || !g.Translator || code === source) return;
     setBusy('translate');
     setError(false);
     try {
-      const translator = await g.Translator.create({ sourceLanguage: locale, targetLanguage: code });
+      const translator = await g.Translator.create({ sourceLanguage: source, targetLanguage: code });
       const text = await translator.translate(explanationText(verdict));
       translator.destroy?.();
       setOutput({ text, lang: code });
@@ -140,7 +145,7 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
     setBusy('explain');
     setError(false);
     try {
-      const outLang = locale === 'hi' ? 'hi' : 'en';
+      const outLang = source;
       const session = await g.LanguageModel.create({
         initialPrompts: [
           {
@@ -168,6 +173,12 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
 
   return (
     <>
+      {own && canOwn ? (
+        <Button variant="secondary" size="sm" onClick={() => void translate(own)} disabled={busy !== null} data-testid="translate-own">
+          {busy === 'translate' && target === own ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Languages aria-hidden="true" />}
+          {t.translateInto(LOCALE_NAMES[own])}
+        </Button>
+      ) : null}
       {canTranslate ? (
         <label className="inline-flex h-9 items-center gap-2 rounded-full border border-line-strong bg-surface pr-1 pl-3 text-sm font-semibold">
           <Languages aria-hidden="true" className="size-4" />
@@ -179,7 +190,7 @@ export default function ChromeAiTools({ verdict }: { verdict: Verdict }) {
             disabled={busy !== null}
           >
             <option value="">{t.translate}</option>
-            {TARGETS.filter((x) => x.code !== locale).map((x) => (
+            {TARGETS.filter((x) => x.code !== source).map((x) => (
               <option key={x.code} value={x.code}>
                 {x.name}
               </option>

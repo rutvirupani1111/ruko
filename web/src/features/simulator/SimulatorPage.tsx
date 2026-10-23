@@ -272,6 +272,9 @@ function Intro({
   onStart: (level: Level) => void;
 }) {
   const t = useT(simStrings);
+  const c = useT(common);
+  const { locale } = useLocale();
+  const practiceLang = baseLocale(locale);
   const recommended = LEVELS.find((l) => !progress[l]) ?? 1;
   return (
     <div>
@@ -280,6 +283,12 @@ function Intro({
           <p className="text-sm font-bold tracking-[0.16em] text-brand uppercase">{t.eyebrow}</p>
           <h1 className={cn('display mt-3', elder ? 'text-5xl sm:text-6xl' : 'text-[2.6rem] sm:text-6xl')}>{t.heading}</h1>
           <p className={cn('mt-4 max-w-2xl leading-relaxed text-muted', elder ? 'text-xl' : 'text-[1.05rem]')}>{t.intro}</p>
+          {practiceLang !== locale ? (
+            // Scenarios are written in English and Hindi only; say which one Gujarati/Marathi players get.
+            <p className="mt-3 text-sm font-semibold text-subtle" data-testid="practice-language-note">
+              {practiceLang === 'hi' ? c.contentLanguage.practiceHi : c.contentLanguage.practiceEn}
+            </p>
+          ) : null}
         </div>
         <ElderToggle elder={elder} onElder={onElder} />
       </header>
